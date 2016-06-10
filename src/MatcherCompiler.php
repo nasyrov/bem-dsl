@@ -59,7 +59,8 @@ class MatcherCompiler
                     if ($conditions) {
                         $eval[] = sprintf('if (%s) {', join(' && ', $conditions));
                         $eval[] = sprintf('$context->matchers(%d, true);', $elemDeclaration['matcherId']);
-                        $eval[] = sprintf('$closure = $matcherCollection[%d]->callback();', $elemDeclaration['index']);
+                        $eval[] = sprintf('$closure = $matcherCollection->get(%d)->callback();',
+                            $elemDeclaration['index']);
                         $eval[] = 'return $closure($context);';
                         $eval[] = '}';
                     }

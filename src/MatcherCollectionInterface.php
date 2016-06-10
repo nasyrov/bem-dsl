@@ -19,4 +19,13 @@ interface MatcherCollectionInterface extends IteratorAggregate
      * @return MatcherCollectionInterface
      */
     public function add($expression, Closure $closure);
+
+    /**
+     * Gets matcher
+     *
+     * @param int $key
+     *
+     * @return null|MatcherInterface
+     */
+    public function get($key);
 }

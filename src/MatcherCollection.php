@@ -1,6 +1,5 @@
 <?php namespace Lego\DSL;
 
-use ArrayIterator;
 use Closure;
 
 /**
@@ -32,8 +31,13 @@ class MatcherCollection implements MatcherCollectionInterface
         $this->matchers[] = new Matcher($expression, $closure);
     }
 
+    public function get($key)
+    {
+        return isset($this->matchers[$key]) ? $this->matchers[$key] : null;
+    }
+
     public function getIterator()
     {
-        return new ArrayIterator($this->matchers);
+        return new MatcherIterator($this);
     }
 }
