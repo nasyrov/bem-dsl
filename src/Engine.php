@@ -48,38 +48,47 @@ class Engine
     }
 
     /**
-     * Renders
+     * Render.
      *
-     * @param ContextInterface $context
+     * @param array ...$bricks
      *
-     * @return string
+     * @return array
      */
-    public function render(ContextInterface $context)
+    public function render(...$bricks)
     {
-        return (new Element($this->resolveContext($context)))->render();
+        return $this->process($bricks);
     }
 
-    protected function resolveContext(ContextInterface $context)
+    protected function process(array $bricks)
     {
         $compiledMatchers = $this->getCompiledMatchers();
 
-        $nodes[] = $context;
+        $position = 0;
+
+        $nodes[] = (new Node)
+            ->index(0)
+            ->bricks($bricks);
 
         /**
-         * @var $node ContextInterface
+         * @var $node NodeInterface
          */
         while ($node = array_shift($nodes)) {
-            /**
-             * @var ContextInterface $child
-             */
-            foreach ($node->content() as $child) {
-                $child instanceof ContextInterface || $nodes[] = $child;
-            }
+            if (is_array($node->bricks())) {
+                foreach ($node->bricks() as $index => $brick) {
+                    if ($brick instanceof ContextInterface) {
+                        $nodes[] = (new Node)
+                            ->index($index)
+                            ->position(++$position)
+                            ->bricks($node->bricks())
+                            ->parent($node);
+                    }
+                }
+            } elseif ($node->bricks() instanceof ContextInterface) {
 
-            $compiledMatchers($node);
+            }
         }
 
-        return $context;
+        return $nodes;
     }
 
     protected function getCompiledMatchers()

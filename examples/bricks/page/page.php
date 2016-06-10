@@ -7,6 +7,7 @@ $engine->registerMatcher('page', function (ContextInterface $context) {
     $context->tag('body');
 
     return [
+        '<!DOCTYPE html>',
         (new Context)->tag('html')->cls(['ua_js_no'])->content(
             (new Context)->elem('head')->content(
                 (new Context)->elem('meta')->attrs('charset', 'utf-8')
