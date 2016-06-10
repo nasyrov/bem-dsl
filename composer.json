@@ -1,0 +1,43 @@
+{
+  "name": "lego/dsl",
+  "description": "Lego template engine",
+  "keywords": [
+    "templating",
+    "templates",
+    "views"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nasyrov Evgenii",
+      "email": "inasyrov@ya.ru",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0",
+    "composer/installers": "^1.0"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^2.6",
+    "phpmd/phpmd": "^2.4",
+    "phpunit/phpunit": "^5.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Lego\\DSL\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Lego\\DSL\\": "tests"
+    }
+  },
+  "scripts": {
+    "lint": [
+      "vendor/bin/phpcs",
+      "vendor/bin/phpmd src text cleancode,codesize,controversial,design,naming,unusedcode"
+    ],
+    "test": "phpunit"
+  }
+}
