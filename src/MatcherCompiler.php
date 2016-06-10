@@ -10,26 +10,26 @@ class MatcherCompiler
     /**
      * Collection of matchers.
      *
-     * @var MatcherCollectionInterface
+     * @var MatcherInterface[]
      */
-    protected $matcherCollection;
+    protected $matchers;
 
     /**
      * Create new MatcherCompiler instance
      *
-     * @param MatcherCollectionInterface $matcherCollection
+     * @param MatcherInterface[] $matchers
      */
-    public function __construct(MatcherCollectionInterface $matcherCollection)
+    public function __construct(array $matchers)
     {
-        $this->matcherCollection = $matcherCollection;
+        $this->matchers = $matchers;
     }
 
     public function compile()
     {
         $declarations = $this->getDeclarations();
 
-        $eval[] = 'return function(Lego\DSL\MatcherCollectionInterface $matcherCollection) {';
-        $eval[] = 'return function(Lego\DSL\ContextInterface $context) use ($matcherCollection) {';
+        $eval[] = 'return function(array $matchers) {';
+        $eval[] = 'return function(Lego\DSL\ContextInterface $context) use ($matchers) {';
         $eval[] = 'switch ($context->block()) {';
 
         $declarationsByBlock = $this->groupDeclarationsBy($declarations, 'block');
@@ -59,8 +59,7 @@ class MatcherCompiler
                     if ($conditions) {
                         $eval[] = sprintf('if (%s) {', join(' && ', $conditions));
                         $eval[] = sprintf('$context->matchers(%d, true);', $elemDeclaration['matcherId']);
-                        $eval[] = sprintf('$closure = $matcherCollection->get(%d)->callback();',
-                            $elemDeclaration['index']);
+                        $eval[] = sprintf('$closure = $matchers[%d]->callback();', $elemDeclaration['index']);
                         $eval[] = 'return $closure($context);';
                         $eval[] = '}';
                     }
@@ -79,7 +78,7 @@ class MatcherCompiler
 
         $constructor = eval(join("\n", $eval));
 
-        return $constructor($this->matcherCollection);
+        return $constructor($this->matchers);
     }
 
     protected function extractBemNotation($expression)
@@ -87,7 +86,9 @@ class MatcherCompiler
         list($blockBits, $elemBits) = explode('__', $expression . "__\1");
 
         list($block, $blockMod, $blockModVal) = $this->extractBemBits($blockBits);
-        list($elem, $elemMod, $elemModVal) = $this->extractBemBits($elemBits);
+        if ("\1" !== $elemBits) {
+            list($elem, $elemMod, $elemModVal) = $this->extractBemBits($elemBits);
+        }
 
         return compact('block', 'blockMod', 'blockModVal', 'elem', 'elemMod', 'elemModVal');
     }
@@ -111,7 +112,7 @@ class MatcherCompiler
         /**
          * @var $matcher MatcherInterface
          */
-        foreach ($this->matcherCollection as $matcher) {
+        foreach ($this->matchers as $matcher) {
             $declarations[] = $this->extractBemNotation($matcher->expr()) + [
                     'index'     => $index++,
                     'matcherId' => $matcher->id(),

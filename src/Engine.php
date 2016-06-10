@@ -12,9 +12,9 @@ class Engine
     /**
      * Collection of matchers.
      *
-     * @var MatcherCollectionInterface
+     * @var MatcherInterface[]
      */
-    protected $matcherCollection;
+    protected $matchers;
 
     /**
      * Compiled matchers.
@@ -22,14 +22,6 @@ class Engine
      * @var Closure
      */
     protected $compiledMatchers;
-
-    /**
-     * Create new Engine instance.
-     */
-    public function __construct()
-    {
-        $this->matcherCollection = new MatcherCollection;
-    }
 
     /**
      * Registers new matcher
@@ -47,7 +39,9 @@ class Engine
             }, $expression);
         }
 
-        $this->matcherCollection->add($expression, $closure);
+        $this->matchers[] = new Matcher($expression, $closure);
+
+        // reset compiled matchers
         $this->compiledMatchers = null;
 
         return $this;
@@ -95,7 +89,7 @@ class Engine
     protected function getCompiledMatchers()
     {
         if (null === $this->compiledMatchers) {
-            $this->compiledMatchers = (new MatcherCompiler($this->matcherCollection))->compile();
+            $this->compiledMatchers = (new MatcherCompiler($this->matchers))->compile();
         }
 
         return $this->compiledMatchers;
