@@ -1,5 +1,7 @@
 <?php namespace Lego\DSL;
 
+use Closure;
+
 /**
  * Class Engine
  *
@@ -17,7 +19,7 @@ class Engine
     /**
      * Compiled matchers.
      *
-     * @var \Closure
+     * @var Closure
      */
     protected $compiledMatchers;
 
@@ -32,21 +34,21 @@ class Engine
     /**
      * Registers new matcher
      *
-     * @param string|array $expr
-     * @param \Closure $callback
+     * @param string|array $expression
+     * @param Closure $closure
      *
      * @return Engine
      */
-    public function registerMatcher($expr, \Closure $callback)
+    public function registerMatcher($expression, Closure $closure)
     {
-        if (is_array($expr)) {
-            return array_map(function ($expr) use ($callback) {
-                return $this->registerMatcher($expr, $callback);
-            }, $expr);
+        if (is_array($expression)) {
+            return array_map(function ($expression) use ($closure) {
+                return $this->registerMatcher($expression, $closure);
+            }, $expression);
         }
 
-        $this->matcherCollection[$expr] = $callback;
-        $this->compiledMatchers         = null;
+        $this->matcherCollection->add($expression, $closure);
+        $this->compiledMatchers = null;
 
         return $this;
     }

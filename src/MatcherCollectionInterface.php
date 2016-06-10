@@ -1,13 +1,14 @@
 <?php namespace Lego\DSL;
 
 use Closure;
+use IteratorAggregate;
 
 /**
  * Interface MatcherCollectionInterface.
  *
  * @package Lego\DSL
  */
-interface MatcherCollectionInterface
+interface MatcherCollectionInterface extends IteratorAggregate
 {
     /**
      * Adds new matcher
@@ -18,6 +19,4 @@ interface MatcherCollectionInterface
      * @return MatcherCollectionInterface
      */
     public function add($expression, Closure $closure);
-
-    public function toArray();
 }

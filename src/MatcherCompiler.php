@@ -108,11 +108,10 @@ class MatcherCompiler
         $index = 0;
 
         /**
-         * @var $expression string
          * @var $matcher MatcherInterface
          */
-        foreach ($this->matcherCollection as $expression => $matcher) {
-            $declarations[] = $this->extractBemNotation($expression) + [
+        foreach ($this->matcherCollection as $matcher) {
+            $declarations[] = $this->extractBemNotation($matcher->expr()) + [
                     'index'     => $index++,
                     'matcherId' => $matcher->id(),
                 ];
