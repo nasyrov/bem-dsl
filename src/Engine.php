@@ -73,11 +73,7 @@ class Engine
              * @var ContextInterface $child
              */
             foreach ($node->content() as $child) {
-                if (!$child instanceof ContextInterface) {
-                    continue;
-                }
-
-                $nodes[] = $child->block($node->block());
+                $child instanceof ContextInterface || $nodes[] = $child;
             }
 
             $compiledMatchers($node);
