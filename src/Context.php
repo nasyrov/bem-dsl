@@ -66,9 +66,9 @@ class Context implements ContextInterface
     /**
      * Collection of JS parameters.
      *
-     * @var array
+     * @var bool|array
      */
-    protected $jsParams = [];
+    protected $js;
 
     /**
      * Context content.
@@ -184,13 +184,13 @@ class Context implements ContextInterface
         return $this;
     }
 
-    public function jsParams($jsParams = null)
+    public function js($js = null)
     {
-        if (null === $jsParams) {
-            return $this->jsParams;
+        if (null === $js) {
+            return $this->js;
         }
 
-        $this->jsParams = $jsParams;
+        $this->js = $js;
 
         return $this;
     }

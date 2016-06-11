@@ -16,7 +16,8 @@ $engine->registerMatcher('page', function (ContextInterface $context) {
                     'content'    => 'IE=edge',
                 ])
             )
-        )
+        ),
+        $context
     ];
 });
 

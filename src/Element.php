@@ -84,7 +84,7 @@ class Element
 
         $this->context->cls() || $cssClasses += $this->context->cls();
 
-        $cssClasses || $attributes['class'] = join(' ', $cssClasses);
+        $cssClasses && $attributes['class'] = join(' ', $cssClasses);
 
         return join('', array_map(function ($key, $value) {
             return $this->renderAttribute($key, $value);
