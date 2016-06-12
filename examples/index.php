@@ -21,13 +21,5 @@ foreach (new RecursiveIteratorIterator($directoryIterator) as $file) {
 
 // render
 echo $engine->render(
-    (new Context)->block('page')->content(
-        'just a plain text',
-        (new Context)->block('button')->cls(['test1'])->mods('theme', 'green')->attrs('tabindex', 1)->content(
-            (new Context)->elem('text')->content('Button text #1')
-        ),
-        (new Context)->block('button')->cls(['test1'])->mods('theme', 'red')->attrs('tabindex', 2)->content(
-            (new Context)->elem('text')->content('Button text #2')
-        )
-    )
+    (new Context)->block('page')
 ), "\n";

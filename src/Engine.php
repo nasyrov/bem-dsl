@@ -88,77 +88,87 @@ class Engine
         $result = $bricks;
 
         $nodes[] = [
-            'index'  => 0,
-            'block'  => null,
-            'result' => $result,
+            'index'   => 0,
+            'block'   => null,
+            'context' => $bricks[0],
+            'result'  => $result,
         ];
 
         while ($node = array_shift($nodes)) {
-            $nodeBlock  = $node['block'];
-            $nodeResult = $node['result'];
+            $nodeBlock   = $node['block'];
+            $nodeContext = $node['context'];
 
-            if (is_array($nodeResult)) {
-                foreach ($nodeResult as $index => $child) {
-                    $nodes[] = [
-                        'index'  => $index,
-                        'block'  => $nodeBlock,
-                        'result' => $child,
-                    ];
-                }
-            } else {
-                $stopProcess = false;
-
-                if (is_scalar($nodeResult)) {
-                    continue;
-                } elseif ($nodeResult->elem()) {
-                    $nodeBlock = $nodeResult->block() ?: $nodeBlock;
-                    $nodeResult->block($nodeBlock);
-                } elseif ($nodeResult->block()) {
-                    $nodeBlock = $nodeResult->block();
-                }
-
-                $compiledResult = $compiledMatchers($nodeResult);
-                if (null !== $compiledResult) {
-                    $nodeResult = $compiledResult;
-
-                    $node['block']  = $nodeBlock;
-                    $node['result'] = $nodeResult;
-
-                    $nodes[] = $node;
-
-                    $stopProcess = true;
-                }
-
-                if (!$stopProcess && $nodeResult->content()) {
-                    if (is_array($nodeResult->content())) {
-                        foreach ($nodeResult->content() as $index => $child) {
-                            $nodes[] = [
-                                'index'  => $index,
-                                'block'  => $nodeBlock,
-                                'result' => $child,
-                            ];
-                        }
-
+            if (is_array($nodeContext)) {
+                foreach ($nodeContext as $index => $child) {
+                    if (!$child instanceof ContextInterface) {
                         continue;
                     }
 
                     $nodes[] = [
-                        'index'  => 'content',
-                        'block'  => $nodeBlock,
-                        'result' => $nodeResult->content(),
+                        'index'   => $index,
+                        'block'   => $nodeBlock,
+                        'context' => $child,
+                        'result'  => $nodeContext,
+                    ];
+                }
+
+                $node['result'][$node['index']] = $nodeContext;
+
+                continue;
+            }
+
+            if (is_scalar($nodeContext) || empty($nodeContext)) {
+                continue;
+            } elseif ($nodeContext->elem()) {
+                $nodeBlock = $nodeContext->block() ?: $nodeBlock;
+                $nodeContext->block($nodeBlock);
+            } elseif ($nodeContext->block()) {
+                $nodeBlock = $nodeContext->block();
+            }
+
+            $compiledResult = $compiledMatchers($nodeContext);
+            if (null !== $compiledResult) {
+                $nodeContext = $compiledResult;
+
+                $node['block']   = $nodeBlock;
+                $node['context'] = $nodeContext;
+
+                $nodes[] = $node;
+
+                continue;
+            }
+
+            if ($nodeContext->content()) {
+                if (is_array($nodeContext->content())) {
+                    foreach ($nodeContext->content() as $index => $child) {
+                        if (!$child instanceof ContextInterface) {
+                            continue;
+                        }
+
+                        $nodes[] = [
+                            'index'   => $index,
+                            'block'   => $nodeBlock,
+                            'context' => $child,
+                            'result'  => $nodeContext,
+                        ];
+                    }
+                } else {
+                    $nodes[] = [
+                        'index'   => 'content',
+                        'block'   => $nodeBlock,
+                        'context' => $nodeContext->content(),
+                        'result'  => $nodeContext,
                     ];
                 }
             }
-
-            $node['result'] = $nodeResult;
         }
 
-        return $result;
+        return $result[0];
     }
 
     protected function toHtml($context)
     {
-        if (is_scalar($context)) {
+        if (is_scalar($context) || empty($context)) {
             return $context;
         } elseif (is_array($context)) {
             return join('', array_map(function ($context) {
