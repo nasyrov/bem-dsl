@@ -39,7 +39,7 @@ class Element
         return sprintf(
             $this->getTemplate(),
             $this->context->tag(),
-            $this->renderAttrs(),
+            $this->renderAttributes(),
             $this->renderContent()
         );
     }
@@ -53,31 +53,45 @@ class Element
         return static::DOUBLE_TAG_TEMPLATE;
     }
 
-    protected function renderAttrs()
+    protected function renderAttributes()
     {
-        $attrs = $this->context->attrs();
+        $attributes = $this->context->attrs();
 
-        $this->resolveBemAttrs($attrs);
-        $this->resolveClsAttrs($attrs);
+        $cssClasses = [];
+
+        if ($this->context->bem()) {
+            $jsParams = [];
+
+            $base = $this->context->block() . ($this->context->elem() ? '__' . $this->context->elem() : '');
+
+            if ($this->context->block()) {
+                $cssClasses[] = $this->resolveBemCssClasses($base, null, false);
+                if ($this->context->jsParams()) {
+                    $jsParams[$base] = $this->context->jsParams();
+                }
+            }
+
+            if ($this->context->mix()) {
+                foreach ($this->context->mix() as $key => $value) {
+                }
+            }
+
+            if ($jsParams) {
+                $cssClasses[]           = 'i-bem';
+                $attributes['data-bem'] = json_encode($jsParams);
+            }
+        }
+
+        $this->context->cls() || $cssClasses += $this->context->cls();
+
+        $cssClasses && $attributes['class'] = join(' ', $cssClasses);
 
         return join('', array_map(function ($key, $value) {
-            return $this->renderAttr($key, $value);
-        }, array_keys($attrs), $attrs));
+            return $this->renderAttribute($key, $value);
+        }, array_keys($attributes), $attributes));
     }
 
-    protected function resolveBemAttrs()
-    {
-        if (!$this->context->bem()) {
-            return;
-        }
-    }
-
-    protected function resolveClsAttrs(array &$attrs)
-    {
-        $attrs['class'] = join(' ', $this->context->cls());
-    }
-
-    protected function renderAttr($key, $value)
+    protected function renderAttribute($key, $value)
     {
         if ('' === $value || false == $value) {
             return '';
@@ -86,6 +100,21 @@ class Element
         }
 
         return sprintf(' %s="%s"', $key, $value);
+    }
+
+    protected function resolveBemCssClasses($base, $parentBase = null, $noBase = false)
+    {
+        $cssClasses = '';
+
+        if ($parentBase !== $base) {
+            $cssClasses .= $parentBase ? ' ' : $base;
+        }
+
+        foreach ($this->context->mods() as $key => $value) {
+            $cssClasses .= ' ' . ($noBase ? '' : $base) . '_' . $key . ($value === true ? '' : '_' . $value);
+        }
+
+        return $cssClasses;
     }
 
     protected function renderContent()

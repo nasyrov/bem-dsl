@@ -84,11 +84,11 @@ interface ContextInterface
     /**
      * Sets and gets JS parameters.
      *
-     * @param bool|array $jsParams
+     * @param bool|array $js
      *
      * @return bool|array|ContextInterface
      */
-    public function jsParams($jsParams);
+    public function js($js);
 
     /**
      * Sets and gets content.
