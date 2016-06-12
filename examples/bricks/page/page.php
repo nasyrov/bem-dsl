@@ -4,7 +4,7 @@ use Lego\DSL\Context;
 use Lego\DSL\ContextInterface;
 
 $engine->registerMatcher('page', function (ContextInterface $context) {
-    $context->tag('body')->content($context->content());
+    $context->tag('body');
 
     return [
         '<!DOCTYPE html>',
@@ -15,9 +15,9 @@ $engine->registerMatcher('page', function (ContextInterface $context) {
                     'http-equiv' => 'X-UA-Compatible',
                     'content'    => 'IE=edge',
                 ])
-            )
+            ),
+            $context
         ),
-        $context
     ];
 });
 

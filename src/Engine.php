@@ -72,29 +72,29 @@ class Engine
     /**
      * Render.
      *
-     * @param array ...$bricks
+     * @param ContextInterface $context
      *
      * @return array
      */
-    public function render(...$bricks)
+    public function render(ContextInterface $context)
     {
-        return $this->toHtml($this->process($bricks));
+        return $this->toHtml($this->process($context));
     }
 
-    protected function process(array $bricks)
+    protected function process(ContextInterface $context)
     {
         $compiledMatchers = $this->getCompiledMatchers();
 
-        $result = $bricks;
+        $result = [$context];
 
         $nodes[] = [
             'index'   => 0,
             'block'   => null,
-            'context' => $bricks[0],
+            'context' => $context,
             'result'  => $result,
         ];
 
-        while ($node = array_shift($nodes)) {
+        while ($node = array_pop($nodes)) {
             $nodeBlock   = $node['block'];
             $nodeContext = $node['context'];
 
@@ -112,14 +112,12 @@ class Engine
                     ];
                 }
 
-                $node['result'][$node['index']] = $nodeContext;
+                $result[$node['index']] = $nodeContext;
 
                 continue;
             }
 
-            if (is_scalar($nodeContext) || empty($nodeContext)) {
-                continue;
-            } elseif ($nodeContext->elem()) {
+            if ($nodeContext->elem()) {
                 $nodeBlock = $nodeContext->block() ?: $nodeBlock;
                 $nodeContext->block($nodeBlock);
             } elseif ($nodeContext->block()) {
