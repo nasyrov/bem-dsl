@@ -113,7 +113,7 @@ class Context implements ContextInterface
             return $this->classes;
         }
 
-        $this->classes += $classes;
+        $this->classes = array_merge($this->classes, $classes);
 
         return $this;
     }
