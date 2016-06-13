@@ -10,7 +10,7 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 $engine = new Engine();
 
 // include all the bricks declarations
-$directoryIterator = new RecursiveDirectoryIterator('bricks');
+$directoryIterator = new RecursiveDirectoryIterator(__DIR__ . '/bricks');
 foreach (new RecursiveIteratorIterator($directoryIterator) as $file) {
     if (!strpos($file, '.php')) {
         continue;
