@@ -1,5 +1,7 @@
 <?php namespace Lego\DSL;
 
+use Closure;
+
 /**
  * Interface MatcherInterface.
  *
@@ -8,29 +10,20 @@
 interface MatcherInterface
 {
     /**
-     * Sets and gets the matcher ID.
+     * Sets and gets the expression.
      *
-     * @param null|int $id
-     *
-     * @return int|MatcherInterface
-     */
-    public function id($id);
-
-    /**
-     * Sets and gets the matcher expression.
-     *
-     * @param null|string $expr
+     * @param null|string $expression
      *
      * @return string|MatcherInterface
      */
-    public function expr($expr);
+    public function expression($expression);
 
     /**
-     * Sets and gets the matcher callback.
+     * Sets and gets the closure.
      *
-     * @param null|\Closure $callback
+     * @param null|Closure $closure
      *
-     * @return \Closure|MatcherInterface
+     * @return Closure|MatcherInterface
      */
-    public function callback(\Closure $callback);
+    public function closure(Closure $closure);
 }

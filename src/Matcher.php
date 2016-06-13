@@ -1,5 +1,9 @@
 <?php namespace Lego\DSL;
 
+use Closure;
+use Exception;
+use ReflectionFunction;
+
 /**
  * Class Matcher.
  *
@@ -8,82 +12,58 @@
 class Matcher implements MatcherInterface
 {
     /**
-     * Matcher index.
-     *
-     * @var int
-     */
-    protected static $index = 0;
-
-    /**
-     * Matcher ID.
-     *
-     * @var int
-     */
-    protected $id;
-
-    /**
-     * Matcher expression.
-     *
+     * Expression.
      * @var string
      */
     protected $expr;
-
     /**
-     * Matcher callback.
-     *
-     * @var \Closure
+     * Closure.
+     * @var Closure
      */
-    protected $callback;
+    protected $closure;
 
     /**
      * Creates new Matcher instance.
      *
-     * @param string $expr
-     * @param \Closure $callback
+     * @param null|string $expr
+     * @param null|Closure $closure
      */
-    public function __construct($expr, \Closure $callback)
+    public function __construct($expr = null, Closure $closure = null)
     {
-        $this->id(++static::$index)
-             ->expr($expr)
-             ->callback($callback);
-    }
-
-    public function id($id = null)
-    {
-        if (null === $id) {
-            return $this->id;
+        if ($expr) {
+            $this->expression($expr);
         }
 
-        $this->id = $id;
-
-        return $this;
+        if ($closure) {
+            $this->closure($closure);
+        }
     }
 
-    public function expr($expr = null)
+    public function expression($expression = null)
     {
-        if (null === $expr) {
+        if (null === $expression) {
             return $this->expr;
         }
 
-        $this->expr = $expr;
+        $this->expr = $expression;
 
         return $this;
     }
 
-    public function callback(\Closure $callback = null)
+    public function closure(Closure $closure = null)
     {
-        if (null === $callback) {
-            return $this->callback;
+        if (null === $closure) {
+            return $this->closure;
         }
 
-        $reflection = new \ReflectionFunction($callback);
+        $reflection = new ReflectionFunction($closure);
         $parameters = $reflection->getParameters();
 
         if (!isset($parameters[0]) || !$parameters[0]->getClass()->isInterface()) {
-            throw new \Exception('Callback argument must be defined as ContextInterface');
+            throw new Exception('Callback argument must be defined as ContextInterface');
         }
 
-        $this->callback = $callback;
+        $this->closure = $closure;
 
         return $this;
     }

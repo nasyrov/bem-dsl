@@ -217,7 +217,7 @@ class Engine
         $result = '<' . $tag . ($classes ? ' class="' . $classes . '"' : '') . ($attributes ?: '');
 
         if (in_array($tag, $this->shortTags)) {
-            $result .= '/>';
+            $result .= '>';
         } else {
             $result .= '>';
             if ($context->content()) {

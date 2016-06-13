@@ -26,7 +26,7 @@ class MatcherCompiler
 
     public function compile()
     {
-        $declarations = $this->getDeclarations();
+        $declarations = $this->generateDeclarations();
 
         $eval[] = 'return function(array $matchers) {';
         $eval[] = 'return function(Lego\DSL\ContextInterface $context) use ($matchers) {';
@@ -42,7 +42,7 @@ class MatcherCompiler
                 $eval[] = '__no_value__' === $elem ? 'default:' : sprintf('case "%s":', $elem);
 
                 foreach ($elemDeclarations as $elemDeclaration) {
-                    $conditions = [sprintf('!$context->matchers(%d)', $elemDeclaration['matcherId'])];
+                    $conditions = [sprintf('!$context->matchers(%d)', $elemDeclaration['index'])];
 
                     foreach (['elemMod' => 'elemModVal', 'blockMod' => 'blockModVal'] as $modKey => $modVal) {
                         if (!isset($elemDeclaration[$modKey])) {
@@ -58,8 +58,8 @@ class MatcherCompiler
 
                     if ($conditions) {
                         $eval[] = sprintf('if (%s) {', join(' && ', $conditions));
-                        $eval[] = sprintf('$context->matchers(%d, true);', $elemDeclaration['matcherId']);
-                        $eval[] = sprintf('$closure = $matchers[%d]->callback();', $elemDeclaration['index']);
+                        $eval[] = sprintf('$context->matchers(%d, true);', $elemDeclaration['index']);
+                        $eval[] = sprintf('$closure = $matchers[%d]->closure();', $elemDeclaration['index']);
                         $eval[] = 'return $closure($context);';
                         $eval[] = '}';
                     }
@@ -103,20 +103,17 @@ class MatcherCompiler
         return [$name, $mod, $val];
     }
 
-    protected function getDeclarations()
+    protected function generateDeclarations()
     {
         $declarations = [];
-
-        $index = 0;
 
         /**
          * @var $matcher MatcherInterface
          */
-        foreach ($this->matchers as $matcher) {
-            $declarations[] = $this->extractBemNotation($matcher->expr()) + [
-                    'index'     => $index++,
-                    'matcherId' => $matcher->id(),
-                ];
+        foreach ($this->matchers as $index => $matcher) {
+            $declarations[] = array_merge($this->extractBemNotation($matcher->expression()), [
+                'index' => $index
+            ]);
         }
 
         return $declarations;

@@ -53,7 +53,7 @@ class Context implements ContextInterface
      */
     protected $js;
     /**
-     * Context content.
+     * Content.
      * @var mixed
      */
     protected $content;
