@@ -22,11 +22,11 @@ foreach (new RecursiveIteratorIterator($directoryIterator) as $file) {
 // render
 echo $engine->render(
     (new Context)->block('page')->content(
-        (new Context)->block('button')->mods('theme', 'green')->content(
-            (new Context)->elem('text')->content('Button text #1')
+        (new Context)->block('button')->modifiers('theme', 'green')->content(
+            (new Context)->element('text')->content('Button text #1')
         ),
-        (new Context)->block('button')->mods('theme', 'green')->content(
-            (new Context)->elem('text')->content('Button text #2')
+        (new Context)->block('button')->modifiers('theme', 'green')->content(
+            (new Context)->element('text')->content('Button text #2')
         )
     )
 ), "\n";

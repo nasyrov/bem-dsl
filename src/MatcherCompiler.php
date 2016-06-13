@@ -35,7 +35,7 @@ class MatcherCompiler
         $declarationsByBlock = $this->groupDeclarationsBy($declarations, 'block');
         foreach ($declarationsByBlock as $block => $blockDeclarations) {
             $eval[] = sprintf('case "%s":', $block);
-            $eval[] = 'switch ($context->elem()) {';
+            $eval[] = 'switch ($context->element()) {';
 
             $declarationsByElem = $this->groupDeclarationsBy($blockDeclarations, 'elem');
             foreach ($declarationsByElem as $elem => $elemDeclarations) {

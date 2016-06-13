@@ -9,77 +9,56 @@ class Context implements ContextInterface
 {
     /**
      * Block name.
-     *
      * @var string
      */
     protected $block;
-
     /**
      * Element name.
-     *
      * @var string
      */
     protected $element;
-
     /**
-     * Mixed context.
-     *
+     * Collection of mixes.
      * @var array
      */
-    protected $mix = [];
-
+    protected $mixes = [];
     /**
      * HTML tag name.
-     *
      * @var string
      */
     protected $tag;
-
     /**
      * Collection of CSS classes.
-     *
      * @var array
      */
     protected $classes = [];
-
     /**
-     * Collection of modificators.
-     *
+     * Collection of modifiers.
      * @var array
      */
-    protected $mods = [];
-
+    protected $modifiers = [];
     /**
      * Collection of attributes.
-     *
      * @var array
      */
     protected $attributes = [];
-
     /**
      * BEM notation.
-     *
      * @var bool
      */
     protected $bem = true;
-
     /**
      * Collection of JS parameters.
-     *
      * @var bool|array
      */
     protected $js;
-
     /**
      * Context content.
-     *
      * @var mixed
      */
     protected $content;
-
     /**
      * Collection of matchers.
-     *
      * @var array
      */
     protected $matchers = [];
@@ -95,24 +74,24 @@ class Context implements ContextInterface
         return $this;
     }
 
-    public function elem($elem = null)
+    public function element($element = null)
     {
-        if (null === $elem) {
+        if (null === $element) {
             return $this->element;
         }
 
-        $this->element = $elem;
+        $this->element = $element;
 
         return $this;
     }
 
-    public function mix(array $mix = null)
+    public function mixes(array $mixes = null)
     {
-        if (null === $mix) {
-            return $this->mix;
+        if (null === $mixes) {
+            return $this->mixes;
         }
 
-        $this->mix += $mix;
+        $this->mixes += $mixes;
 
         return $this;
     }
@@ -128,35 +107,35 @@ class Context implements ContextInterface
         return $this;
     }
 
-    public function cls(array $cls = null)
+    public function classes(array $classes = null)
     {
-        if (null === $cls) {
+        if (null === $classes) {
             return $this->classes;
         }
 
-        $this->classes += $cls;
+        $this->classes += $classes;
 
         return $this;
     }
 
-    public function mods($key = null, $value = null)
+    public function modifiers($key = null, $value = null)
     {
         if (null === $key) {
-            return $this->mods;
+            return $this->modifiers;
         } elseif (is_array($key)) {
-            $this->mods += $key;
+            $this->modifiers += $key;
 
             return $this;
         } elseif (null === $value) {
-            return isset($this->mods[$key]) ? $this->mods[$key] : null;
+            return isset($this->modifiers[$key]) ? $this->modifiers[$key] : null;
         }
 
-        $this->mods[$key] = $value;
+        $this->modifiers[$key] = $value;
 
         return $this;
     }
 
-    public function attrs($key = null, $value = null)
+    public function attributes($key = null, $value = null)
     {
         if (null === $key) {
             return $this->attributes;

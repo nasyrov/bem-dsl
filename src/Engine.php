@@ -117,7 +117,7 @@ class Engine
                 continue;
             }
 
-            if ($nodeContext->elem()) {
+            if ($nodeContext->element()) {
                 $nodeBlock = $nodeContext->block() ?: $nodeBlock;
                 $nodeContext->block($nodeBlock);
             } elseif ($nodeContext->block()) {
@@ -178,43 +178,43 @@ class Engine
             return $this->toHtml($context->content());
         }
 
-        $cls      = '';
-        $attrs    = '';
-        $jsParams = [];
+        $classes    = '';
+        $attributes = '';
+        $jsParams   = [];
 
-        if ($context->attrs()) {
-            foreach ($context->attrs() as $attrName => $attrValue) {
-                if (true === $attrValue) {
-                    $attrs .= ' ' . $attrName;
-                } elseif ($attrValue) {
-                    $attrs .= ' ' . $attrName . '="' . $attrValue . '"';
+        if ($context->attributes()) {
+            foreach ($context->attributes() as $key => $value) {
+                if (true === $value) {
+                    $attributes .= ' ' . $key;
+                } elseif ($value) {
+                    $attributes .= ' ' . $key . '="' . $value . '"';
                 }
             }
         }
 
         if ($context->bem()) {
-            $base = $context->block() . ($context->elem() ? '__' . $context->elem() : '');
+            $base = $context->block() . ($context->element() ? '__' . $context->element() : '');
 
             if ($context->block()) {
-                $cls = $this->resolveBemCssClasses($context, $base);
+                $classes = $this->resolveBemCssClasses($context, $base);
                 if ($context->js()) {
                     $jsParams[$base] = true === $context->js() ? [] : $context->js();
                 }
             }
 
             if ($jsParams) {
-                $cls .= ' i-bem';
-                $attrs .= ' data-bem="' . json_encode($jsParams) . '"';
+                $classes .= ' i-bem';
+                $attributes .= ' data-bem="' . json_encode($jsParams) . '"';
             }
         }
 
-        if ($context->cls()) {
-            $cls = ($cls ? $cls . ' ' : '') . join(' ', $context->cls());
+        if ($context->classes()) {
+            $classes = ($classes ? $classes . ' ' : '') . join(' ', $context->classes());
         }
 
         $tag = $context->tag() ?: 'div';
 
-        $result = '<' . $tag . ($cls ? ' class="' . $cls . '"' : '') . ($attrs ?: '');
+        $result = '<' . $tag . ($classes ? ' class="' . $classes . '"' : '') . ($attributes ?: '');
 
         if (in_array($tag, $this->shortTags)) {
             $result .= '/>';
@@ -242,7 +242,7 @@ class Engine
     {
         $cssClasses = $base;
 
-        foreach ($context->mods() as $modName => $modValue) {
+        foreach ($context->modifiers() as $modName => $modValue) {
             if (!$modValue) {
                 continue;
             }

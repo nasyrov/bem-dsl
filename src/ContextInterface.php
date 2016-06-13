@@ -17,22 +17,22 @@ interface ContextInterface
     public function block($block);
 
     /**
-     * Sets and gets elem name.
+     * Sets and gets element name.
      *
-     * @param string $elem
+     * @param string $element
      *
      * @return string|ContextInterface
      */
-    public function elem($elem);
+    public function element($element);
 
     /**
-     * Sets and gets mix.
+     * Sets and gets mixes.
      *
-     * @param array $mix
+     * @param array $mixes
      *
      * @return array|ContextInterface
      */
-    public function mix(array $mix);
+    public function mixes(array $mixes);
 
     /**
      * Sets and gets tag.
@@ -46,21 +46,21 @@ interface ContextInterface
     /**
      * Sets and gets classes.
      *
-     * @param array $cls
+     * @param array $classes
      *
      * @return array|ContextInterface
      */
-    public function cls(array $cls);
+    public function classes(array $classes);
 
     /**
-     * Sets and gets modifications.
+     * Sets and gets modifiers.
      *
      * @param string|array $key
      * @param string $value
      *
      * @return string|array|ContextInterface
      */
-    public function mods($key, $value);
+    public function modifiers($key, $value);
 
     /**
      * Set and gets attributes.
@@ -70,10 +70,10 @@ interface ContextInterface
      *
      * @return string|array|ContextInterface
      */
-    public function attrs($key, $value);
+    public function attributes($key, $value);
 
     /**
-     * Sets and gets BEM.
+     * Toggles on/off BEM.
      *
      * @param bool $bem
      *

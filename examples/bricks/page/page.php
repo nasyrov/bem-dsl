@@ -8,10 +8,10 @@ $engine->registerMatcher('page', function (ContextInterface $context) {
 
     return [
         '<!doctype html>',
-        (new Context)->tag('html')->cls(['ua_js_no'])->content(
-            (new Context)->elem('head')->content(
-                (new Context)->elem('meta')->attrs('charset', 'utf-8'),
-                (new Context)->elem('meta')->attrs([
+        (new Context)->tag('html')->classes(['ua_js_no'])->content(
+            (new Context)->element('head')->content(
+                (new Context)->element('meta')->attributes('charset', 'utf-8'),
+                (new Context)->element('meta')->attributes([
                     'http-equiv' => 'x-ua-compatible',
                     'content'    => 'ie=edge',
                 ])
@@ -34,11 +34,11 @@ $engine->registerMatcher('page__meta', function (ContextInterface $context) {
 $engine->registerMatcher('page__link', function (ContextInterface $context) {
     $context->bem(false)
             ->tag('link')
-            ->attrs('rel', 'stylesheet');
+            ->attributes('rel', 'stylesheet');
 });
 
 $engine->registerMatcher('page__favicon', function (ContextInterface $context) {
     $context->bem(false)
             ->tag('link')
-            ->attrs('rel', 'shortcut icon');
+            ->attributes('rel', 'shortcut icon');
 });

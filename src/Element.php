@@ -55,14 +55,14 @@ class Element
 
     protected function renderAttributes()
     {
-        $attributes = $this->context->attrs();
+        $attributes = $this->context->attributes();
 
         $cssClasses = [];
 
         if ($this->context->bem()) {
             $jsParams = [];
 
-            $base = $this->context->block() . ($this->context->elem() ? '__' . $this->context->elem() : '');
+            $base = $this->context->block() . ($this->context->element() ? '__' . $this->context->element() : '');
 
             if ($this->context->block()) {
                 $cssClasses[] = $this->resolveBemCssClasses($base, null, false);
@@ -71,8 +71,8 @@ class Element
                 }
             }
 
-            if ($this->context->mix()) {
-                foreach ($this->context->mix() as $key => $value) {
+            if ($this->context->mixes()) {
+                foreach ($this->context->mixes() as $key => $value) {
                 }
             }
 
@@ -82,7 +82,7 @@ class Element
             }
         }
 
-        $this->context->cls() || $cssClasses += $this->context->cls();
+        $this->context->classes() || $cssClasses += $this->context->classes();
 
         $cssClasses && $attributes['class'] = join(' ', $cssClasses);
 
@@ -110,7 +110,7 @@ class Element
             $cssClasses .= $parentBase ? ' ' : $base;
         }
 
-        foreach ($this->context->mods() as $key => $value) {
+        foreach ($this->context->modifiers() as $key => $value) {
             $cssClasses .= ' ' . ($noBase ? '' : $base) . '_' . $key . ($value === true ? '' : '_' . $value);
         }
 
