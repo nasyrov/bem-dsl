@@ -3,8 +3,7 @@
 use Closure;
 
 /**
- * Class Engine
- *
+ * Class Engine.
  * @package Lego\DSL
  */
 class Engine
@@ -44,6 +43,33 @@ class Engine
         'track',
         'wbr',
     ];
+    /**
+     * DirectoryCollection instance.
+     * @var DirectoryCollectionInterface
+     */
+    protected $directoryCollection;
+
+    /**
+     * Creates new Engine instance.
+     */
+    public function __construct()
+    {
+        $this->directoryCollection = new DirectoryCollection;
+    }
+
+    /**
+     * Add directory.
+     *
+     * @param string|array $path
+     *
+     * @return $this
+     */
+    public function addDirectory($path)
+    {
+        $this->directoryCollection->add($path);
+
+        return $this;
+    }
 
     /**
      * Registers new matcher
@@ -56,9 +82,11 @@ class Engine
     public function registerMatcher($expression, Closure $closure)
     {
         if (is_array($expression)) {
-            return array_map(function ($expression) use ($closure) {
-                return $this->registerMatcher($expression, $closure);
-            }, $expression);
+            foreach ($expression as $value) {
+                $this->registerMatcher($value, $closure);
+            }
+
+            return $this;
         }
 
         $this->matchers[] = new Matcher($expression, $closure);

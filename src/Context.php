@@ -2,7 +2,6 @@
 
 /**
  * Class Context.
- *
  * @package Lego\DSL
  */
 class Context implements ContextInterface

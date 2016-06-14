@@ -6,7 +6,6 @@ use ReflectionFunction;
 
 /**
  * Class Matcher.
- *
  * @package Lego\DSL
  */
 class Matcher implements MatcherInterface

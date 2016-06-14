@@ -4,7 +4,6 @@ use Closure;
 
 /**
  * Interface MatcherInterface.
- *
  * @package Lego\DSL
  */
 interface MatcherInterface

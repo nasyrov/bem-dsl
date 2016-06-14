@@ -2,7 +2,6 @@
 
 /**
  * Interface ContextInterface.
- *
  * @package Lego\DSL
  */
 interface ContextInterface

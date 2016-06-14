@@ -2,7 +2,6 @@
 
 /**
  * Class MatcherCompiler.
- *
  * @package Lego\DSL
  */
 class MatcherCompiler
