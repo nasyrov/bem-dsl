@@ -17,13 +17,11 @@ class DirectoryCollection implements DirectoryCollectionInterface
             foreach ($path as $value) {
                 $this->add($value);
             }
-
-            return $this;
         } elseif (!is_dir($path)) {
             throw new LogicException(sprintf('The "%s" directory path does not exist.', $path));
+        } else {
+            $this->directories[] = $path;
         }
-
-        $this->directories[] = $path;
 
         return $this;
     }

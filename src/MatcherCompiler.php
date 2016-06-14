@@ -7,28 +7,27 @@
 class MatcherCompiler
 {
     /**
-     * Collection of matchers.
-     *
-     * @var MatcherInterface[]
+     * MatcherCollection instance.
+     * @var MatcherCollectionInterface
      */
-    protected $matchers;
+    protected $matcherCollection;
 
     /**
      * Create new MatcherCompiler instance
      *
-     * @param MatcherInterface[] $matchers
+     * @param MatcherCollectionInterface $matcherCollection
      */
-    public function __construct(array $matchers)
+    public function __construct(MatcherCollectionInterface $matcherCollection)
     {
-        $this->matchers = $matchers;
+        $this->matcherCollection = $matcherCollection;
     }
 
     public function compile()
     {
         $declarations = $this->generateDeclarations();
 
-        $eval[] = 'return function(array $matchers) {';
-        $eval[] = 'return function(Lego\DSL\ContextInterface $context) use ($matchers) {';
+        $eval[] = 'return function(array $closures) {';
+        $eval[] = 'return function(Lego\DSL\ContextInterface $context) use ($closures) {';
         $eval[] = 'switch ($context->block()) {';
 
         $declarationsByBlock = $this->groupDeclarationsBy($declarations, 'block');
@@ -58,8 +57,7 @@ class MatcherCompiler
                     if ($conditions) {
                         $eval[] = sprintf('if (%s) {', join(' && ', $conditions));
                         $eval[] = sprintf('$context->matchers(%d, true);', $elemDeclaration['index']);
-                        $eval[] = sprintf('$closure = $matchers[%d]->closure();', $elemDeclaration['index']);
-                        $eval[] = 'return $closure($context);';
+                        $eval[] = sprintf('return $closures[%d]($context);', $elemDeclaration['index']);
                         $eval[] = '}';
                     }
                 }
@@ -77,7 +75,7 @@ class MatcherCompiler
 
         $constructor = eval(join("\n", $eval));
 
-        return $constructor($this->matchers);
+        return $constructor($this->matcherCollection->getClosures());
     }
 
     protected function extractBemNotation($expression)
@@ -106,13 +104,10 @@ class MatcherCompiler
     {
         $declarations = [];
 
-        /**
-         * @var $matcher MatcherInterface
-         */
-        foreach ($this->matchers as $index => $matcher) {
-            $declarations[] = array_merge($this->extractBemNotation($matcher->expression()), [
-                'index' => $index
-            ]);
+        foreach ($this->matcherCollection->getExpressions() as $index => $expression) {
+            $declarations[] = array_merge([
+                'index' => $index,
+            ], $this->extractBemNotation($expression));
         }
 
         return $declarations;

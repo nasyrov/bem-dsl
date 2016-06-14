@@ -9,19 +9,11 @@ use Closure;
 class Engine
 {
     /**
-     * Collection of matchers.
-     *
-     * @var MatcherInterface[]
-     */
-    protected $matchers;
-
-    /**
      * Compiled matchers.
      *
      * @var Closure
      */
     protected $compiledMatchers;
-
     /**
      * Short tags.
      *
@@ -48,6 +40,11 @@ class Engine
      * @var DirectoryCollectionInterface
      */
     protected $directoryCollection;
+    /**
+     * MatcherCollection instance.
+     * @var MatcherCollectionInterface
+     */
+    protected $matcherCollection;
 
     /**
      * Creates new Engine instance.
@@ -55,6 +52,7 @@ class Engine
     public function __construct()
     {
         $this->directoryCollection = new DirectoryCollection;
+        $this->matcherCollection   = new MatcherCollection;
     }
 
     /**
@@ -81,15 +79,7 @@ class Engine
      */
     public function registerMatcher($expression, Closure $closure)
     {
-        if (is_array($expression)) {
-            foreach ($expression as $value) {
-                $this->registerMatcher($value, $closure);
-            }
-
-            return $this;
-        }
-
-        $this->matchers[] = new Matcher($expression, $closure);
+        $this->matcherCollection->add($expression, $closure);
 
         // reset compiled matchers
         $this->compiledMatchers = null;
@@ -260,7 +250,7 @@ class Engine
     protected function getCompiledMatchers()
     {
         if (null === $this->compiledMatchers) {
-            $this->compiledMatchers = (new MatcherCompiler($this->matchers))->compile();
+            $this->compiledMatchers = (new MatcherCompiler($this->matcherCollection))->compile();
         }
 
         return $this->compiledMatchers;

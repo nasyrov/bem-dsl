@@ -9,7 +9,7 @@ use IteratorAggregate;
 interface DirectoryCollectionInterface extends IteratorAggregate
 {
     /**
-     * Adds directory path.
+     * Adds new directory.
      *
      * @param string|array $path
      *
