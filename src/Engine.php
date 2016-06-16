@@ -9,12 +9,12 @@ use Closure;
 class Engine
 {
     /**
-     * DirectoryCollection instance.
-     * @var DirectoryCollectionInterface
+     * MatcherLoaderInterface instance.
+     * @var MatcherLoaderInterface
      */
-    protected $directoryCollection;
+    protected $matcherLoader;
     /**
-     * MatcherCollection instance.
+     * MatcherCollectionInterface instance.
      * @var MatcherCollectionInterface
      */
     protected $matcherCollection;
@@ -29,9 +29,9 @@ class Engine
      */
     public function __construct()
     {
-        $this->directoryCollection = new DirectoryCollection($this);
-        $this->matcherCollection   = new MatcherCollection;
-        $this->matcherCompiler     = new MatcherCompiler($this->matcherCollection);
+        $this->matcherLoader     = new MatcherLoader($this);
+        $this->matcherCollection = new MatcherCollection;
+        $this->matcherCompiler   = new MatcherCompiler($this->matcherCollection);
     }
 
     /**
@@ -43,7 +43,7 @@ class Engine
      */
     public function addDirectory($path)
     {
-        $this->directoryCollection->add($path);
+        $this->matcherLoader->addDirectory($path);
 
         return $this;
     }

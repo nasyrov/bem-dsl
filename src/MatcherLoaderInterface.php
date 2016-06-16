@@ -1,13 +1,13 @@
 <?php namespace Lego\DSL;
 
 /**
- * Interface DirectoryCollectionInterface.
+ * Interface MatcherLoaderInterface.
  * @package Lego\DSL
  */
-interface DirectoryCollectionInterface
+interface MatcherLoaderInterface
 {
     /**
-     * Creates new DirectoryCollectionInterface instance.
+     * Creates new MatcherLoaderInterface instance.
      *
      * @param Engine $engine
      */
@@ -18,7 +18,7 @@ interface DirectoryCollectionInterface
      *
      * @param string|array $path
      *
-     * @return DirectoryCollectionInterface
+     * @return MatcherLoaderInterface
      */
-    public function add($path);
+    public function addDirectory($path);
 }
