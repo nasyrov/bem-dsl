@@ -43,7 +43,7 @@ class Engine
     }
 
     /**
-     * Registers new matcher
+     * Registers new matcher.
      *
      * @param string|array $expression
      * @param Closure $closure
@@ -55,14 +55,23 @@ class Engine
         $this->matcherCollection->add($expression, $closure);
 
         // reset compiled matchers
-        $this->compiledMatchers = null;
+        // $this->compiledMatchers = null;
 
         return $this;
     }
 
+    /**
+     * Renders given context.
+     *
+     * @param string|array|ContextInterface $context
+     *
+     * @return string
+     */
     public function render($context)
     {
-        if ($context instanceof ContextInterface) {
+        if (is_scalar($context)) {
+            return (string)$context;
+        } elseif ($context instanceof ContextInterface) {
             return new Element($context);
         } elseif (is_array($context)) {
             return join('', array_map(function ($context) {
@@ -70,6 +79,9 @@ class Engine
             }, $context));
         }
 
-        return (string)$context;
+        throw new \LogicException(sprintf(
+            'Context "%s" type cannot be rendered.',
+            gettype($context)
+        ));
     }
 }
