@@ -6,10 +6,20 @@ use LogicException;
 class DirectoryCollection implements DirectoryCollectionInterface
 {
     /**
-     * Collection of directories.
-     * @var DirectoryInterface[]
+     * Engine instance.
+     * @var Engine
      */
-    protected $directories;
+    protected $engine;
+    /**
+     * Collection of directories.
+     * @var array
+     */
+    protected $directories = [];
+
+    public function __construct(Engine $engine)
+    {
+        $this->engine = $engine;
+    }
 
     public function add($path)
     {
@@ -19,15 +29,30 @@ class DirectoryCollection implements DirectoryCollectionInterface
             }
         } elseif (!is_dir($path)) {
             throw new LogicException(sprintf('The "%s" directory path does not exist.', $path));
+        } elseif (false !== array_search($path, $this->directories)) {
+            throw new LogicException(sprintf('The "%s" directory path is already being used.', $path));
         } else {
+            $this->iterate($path);
+
             $this->directories[] = $path;
         }
 
         return $this;
     }
 
-    public function getIterator()
+    protected function iterate($path)
     {
-        return new ArrayIterator($this->directories);
+        $engine = $this->engine;
+
+        $recursiveDirectoryIterator = new \RecursiveDirectoryIterator($path);
+        $recursiveIteratorIterator  = new \RecursiveIteratorIterator($recursiveDirectoryIterator);
+        $regexIterator              = new \RegexIterator($recursiveIteratorIterator, '/^.+\.php$/i');
+
+        /**
+         * @var $entry \SplFileInfo
+         */
+        foreach ($regexIterator as $entry) {
+            include $entry->getPathname();
+        }
     }
 }

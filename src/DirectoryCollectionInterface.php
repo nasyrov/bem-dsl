@@ -1,12 +1,10 @@
 <?php namespace Lego\DSL;
 
-use IteratorAggregate;
-
 /**
  * Interface DirectoryCollectionInterface.
  * @package Lego\DSL
  */
-interface DirectoryCollectionInterface extends IteratorAggregate
+interface DirectoryCollectionInterface
 {
     /**
      * Adds new directory.

@@ -18,14 +18,20 @@ class Engine
      * @var MatcherCollectionInterface
      */
     protected $matcherCollection;
+    /**
+     * MatcherCompiler instance.
+     * @var MatcherCompiler
+     */
+    protected $matcherCompiler;
 
     /**
      * Creates new Engine instance.
      */
     public function __construct()
     {
-        $this->directoryCollection = new DirectoryCollection;
+        $this->directoryCollection = new DirectoryCollection($this);
         $this->matcherCollection   = new MatcherCollection;
+        $this->matcherCompiler     = new MatcherCompiler($this->matcherCollection);
     }
 
     /**
