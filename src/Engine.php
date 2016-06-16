@@ -66,24 +66,17 @@ class Engine
         return $this;
     }
 
-    /**
-     * Render.
-     *
-     * @param ContextInterface $context
-     *
-     * @return array
-     */
-    public function render(ContextInterface $context)
+    public function render($context)
     {
-        $context = $this->process($context);
-
-        if (is_array($context)) {
+        if ($context instanceof ContextInterface) {
+            return new Element($context);
+        } elseif (is_array($context)) {
             return join('', array_map(function ($context) {
-                return new Element($context);
+                return $this->render($context);
             }, $context));
         }
 
-        return new Element($context);
+        return (string)$context;
     }
 
     protected function process(ContextInterface $context)
@@ -176,20 +169,5 @@ class Engine
         }
 
         return $this->compiledMatchers;
-    }
-
-    protected function resolveBemCssClasses(ContextInterface $context, $base)
-    {
-        $cssClasses = $base;
-
-        foreach ($context->modifiers() as $modName => $modValue) {
-            if (!$modValue) {
-                continue;
-            }
-
-            $cssClasses .= ' ' . $base . '_' . $modName . (true === $modValue ? '' : '_' . $modValue);
-        }
-
-        return $cssClasses;
     }
 }

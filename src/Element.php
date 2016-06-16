@@ -1,6 +1,10 @@
 <?php namespace Lego\DSL;
 
-class Element
+/**
+ * Class Element.
+ * @package Lego\DSL
+ */
+class Element implements ElementInterface
 {
     const VOID_TAG_TEMPLATE = '<%s%s>';
     const FULL_TAG_TEMPLATE = '<%1$s%2$s>%3$s</%1$s>';
@@ -43,21 +47,27 @@ class Element
 
     public function render()
     {
+        if (in_array($this->context->tag(), $this->voidTags)) {
+            return sprintf(
+                static::VOID_TAG_TEMPLATE,
+                $this->context->tag(),
+                $this->renderAttributes()
+            );
+        }
+
         return sprintf(
-            $this->template(),
+            static::FULL_TAG_TEMPLATE,
             $this->context->tag(),
             $this->renderAttributes(),
             $this->renderChildren()
         );
     }
 
-    protected function template()
-    {
-        return in_array($this->context->tag(), $this->voidTags) ?
-            static::VOID_TAG_TEMPLATE :
-            static::FULL_TAG_TEMPLATE;
-    }
-
+    /**
+     * Render attributes.
+     *
+     * @return string
+     */
     protected function renderAttributes()
     {
         $attributes = $this->context->attributes();
@@ -77,6 +87,14 @@ class Element
         }, array_keys($attributes), $attributes));
     }
 
+    /**
+     * Renders attribute.
+     *
+     * @param int|string $key
+     * @param string $value
+     *
+     * @return string
+     */
     protected function renderAttribute($key, $value)
     {
         if (is_int($key)) {
@@ -86,6 +104,11 @@ class Element
         return sprintf('%s="%s"', $key, $this->entities($value));
     }
 
+    /**
+     * Resolves BEM attributes.
+     *
+     * @param array $attributes
+     */
     protected function resolveBemAttributes(array $attributes)
     {
         $base = $this->context->block() . ($this->context->element() ? '__' . $this->context->element() : '');
@@ -103,6 +126,13 @@ class Element
         $attributes['class'] = $classes;
     }
 
+    /**
+     * Resolves BEM classes.
+     *
+     * @param string $base
+     *
+     * @return array
+     */
     protected function resolveBemClasses($base)
     {
         $classes[] = $base;
@@ -118,17 +148,29 @@ class Element
         return $classes;
     }
 
+    /**
+     * Renders children.
+     *
+     * @return string
+     */
     protected function renderChildren()
     {
         if (is_array($this->context->content())) {
-            return join('', function ($child) {
+            return join('', array_map(function ($child) {
                 return $this->renderChild($child);
-            }, $this->context->content());
+            }, $this->context->content()));
         }
 
         return $this->renderChild($this->context->content());
     }
 
+    /**
+     * Renders child.
+     *
+     * @param mixed $child
+     *
+     * @return string
+     */
     protected function renderChild($child)
     {
         if (is_string($child)) {
@@ -140,6 +182,13 @@ class Element
         return '';
     }
 
+    /**
+     * Converts characters to HTML entities.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
     protected function entities($value)
     {
         return htmlentities($value, ENT_HTML5);
