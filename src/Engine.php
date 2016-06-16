@@ -6,7 +6,7 @@ use Closure;
  * Class Engine.
  * @package Lego\DSL
  */
-class Engine
+class Engine implements EngineInterface
 {
     /**
      * MatcherLoaderInterface instance.
@@ -29,50 +29,25 @@ class Engine
      */
     public function __construct()
     {
-        $this->matcherLoader     = new MatcherLoader($this);
         $this->matcherCollection = new MatcherCollection;
+        $this->matcherLoader     = new MatcherLoader($this);
         $this->matcherCompiler   = new MatcherCompiler($this->matcherCollection);
     }
 
-    /**
-     * Add directory.
-     *
-     * @param string|array $path
-     *
-     * @return $this
-     */
     public function addDirectory($path)
     {
-        $this->matcherLoader->addDirectory($path);
+        $this->matcherLoader->load($path);
 
         return $this;
     }
 
-    /**
-     * Registers new matcher.
-     *
-     * @param string|array $expression
-     * @param Closure $closure
-     *
-     * @return Engine
-     */
     public function registerMatcher($expression, Closure $closure)
     {
         $this->matcherCollection->add($expression, $closure);
 
-        // reset compiled matchers
-        // $this->compiledMatchers = null;
-
         return $this;
     }
 
-    /**
-     * Renders given context.
-     *
-     * @param string|ContextInterface|array $context
-     *
-     * @return string
-     */
     public function render($context)
     {
         if (is_scalar($context)) {

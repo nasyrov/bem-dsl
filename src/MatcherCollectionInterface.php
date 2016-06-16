@@ -23,12 +23,12 @@ interface MatcherCollectionInterface
      *
      * @return array
      */
-    public function expressions();
+    public function getExpressions();
 
     /**
      * Gets closures.
      *
      * @return array
      */
-    public function closures();
+    public function getClosures();
 }

@@ -10,19 +10,13 @@ class MatcherCollection implements MatcherCollectionInterface
      */
     protected $matchers = [];
 
-    /**
-     * @param string|array $expression
-     * @param Closure $closure
-     *
-     * @return MatcherCollectionInterface
-     */
     public function add($expression, Closure $closure)
     {
         if (is_array($expression)) {
             foreach ($expression as $value) {
                 $this->add($value, $closure);
             }
-        } elseif (array_key_exists($expression, $this->matchers)) {
+        } elseif (isset($this->matchers[$expression])) {
             throw new \LogicException(sprintf('The "%s" expression is already registered.', $expression));
         } else {
             $this->matchers[$expression] = $closure;
@@ -31,12 +25,12 @@ class MatcherCollection implements MatcherCollectionInterface
         return $this;
     }
 
-    public function expressions()
+    public function getExpressions()
     {
         return array_keys($this->matchers);
     }
 
-    public function closures()
+    public function getClosures()
     {
         return array_values($this->matchers);
     }

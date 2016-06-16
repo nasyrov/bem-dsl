@@ -9,16 +9,16 @@ interface MatcherLoaderInterface
     /**
      * Creates new MatcherLoaderInterface instance.
      *
-     * @param Engine $engine
+     * @param EngineInterface $engine
      */
-    public function __construct(Engine $engine);
+    public function __construct(EngineInterface $engine);
 
     /**
-     * Adds new directory.
+     * Loads matchers under a specific directory path.
      *
      * @param string|array $path
      *
      * @return MatcherLoaderInterface
      */
-    public function addDirectory($path);
+    public function load($path);
 }

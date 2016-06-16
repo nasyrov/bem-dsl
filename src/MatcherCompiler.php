@@ -75,7 +75,7 @@ class MatcherCompiler
 
         $constructor = eval(join("\n", $eval));
 
-        return $constructor($this->matcherCollection->closures());
+        return $constructor($this->matcherCollection->getClosures());
     }
 
     protected function extractBemNotation($expression)
@@ -104,7 +104,7 @@ class MatcherCompiler
     {
         $declarations = [];
 
-        foreach ($this->matcherCollection->expressions() as $index => $expression) {
+        foreach ($this->matcherCollection->getExpressions() as $index => $expression) {
             $declarations[] = array_merge([
                 'index' => $index,
             ], $this->extractBemNotation($expression));
