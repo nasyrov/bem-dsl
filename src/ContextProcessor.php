@@ -1,89 +1,21 @@
 <?php namespace Lego\DSL;
 
-use Closure;
-
-/**
- * Class Engine.
- * @package Lego\DSL
- */
-class Engine
+class ContextProcessor
 {
     /**
-     * Compiled matchers.
-     *
-     * @var Closure
+     * Context instance.
+     * @var ContextInterface
      */
-    protected $compiledMatchers;
+    protected $context;
     /**
-     * DirectoryCollection instance.
-     * @var DirectoryCollectionInterface
+     * Collection of nodes.
+     * @var array
      */
-    protected $directoryCollection;
-    /**
-     * MatcherCollection instance.
-     * @var MatcherCollectionInterface
-     */
-    protected $matcherCollection;
+    protected $nodes = [];
 
-    /**
-     * Creates new Engine instance.
-     */
-    public function __construct()
+    public function __construct(ContextInterface $context)
     {
-        $this->directoryCollection = new DirectoryCollection;
-        $this->matcherCollection   = new MatcherCollection;
-    }
-
-    /**
-     * Add directory.
-     *
-     * @param string|array $path
-     *
-     * @return $this
-     */
-    public function addDirectory($path)
-    {
-        $this->directoryCollection->add($path);
-
-        return $this;
-    }
-
-    /**
-     * Registers new matcher
-     *
-     * @param string|array $expression
-     * @param Closure $closure
-     *
-     * @return Engine
-     */
-    public function registerMatcher($expression, Closure $closure)
-    {
-        $this->matcherCollection->add($expression, $closure);
-
-        // reset compiled matchers
-        $this->compiledMatchers = null;
-
-        return $this;
-    }
-
-    /**
-     * Render.
-     *
-     * @param ContextInterface $context
-     *
-     * @return array
-     */
-    public function render(ContextInterface $context)
-    {
-        $context = $this->process($context);
-
-        if (is_array($context)) {
-            return join('', array_map(function ($context) {
-                return new Element($context);
-            }, $context));
-        }
-
-        return new Element($context);
+        $this->context = $context;
     }
 
     protected function process(ContextInterface $context)
@@ -169,27 +101,19 @@ class Engine
         return $result[0];
     }
 
-    protected function getCompiledMatchers()
+    protected function children(array $children)
     {
-        if (null === $this->compiledMatchers) {
-            $this->compiledMatchers = (new MatcherCompiler($this->matcherCollection))->compile();
-        }
-
-        return $this->compiledMatchers;
-    }
-
-    protected function resolveBemCssClasses(ContextInterface $context, $base)
-    {
-        $cssClasses = $base;
-
-        foreach ($context->modifiers() as $modName => $modValue) {
-            if (!$modValue) {
+        foreach ($children as $index => $child) {
+            if (!$child instanceof ContextInterface) {
                 continue;
             }
 
-            $cssClasses .= ' ' . $base . '_' . $modName . (true === $modValue ? '' : '_' . $modValue);
+            $nodes[] = [
+                'index'   => $index,
+                'block'   => $nodeBlock,
+                'context' => $child,
+                'result'  => $nodeContext,
+            ];
         }
-
-        return $cssClasses;
     }
 }

@@ -1,0 +1,147 @@
+<?php namespace Lego\DSL;
+
+class Element
+{
+    const VOID_TAG_TEMPLATE = '<%s%s>';
+    const FULL_TAG_TEMPLATE = '<%1$s%2$s>%3$s</%1$s>';
+
+    /**
+     * Context instance.
+     * @var ContextInterface
+     */
+    protected $context;
+    /**
+     * Short tags.
+     * @var array
+     */
+    protected $voidTags = [
+        'area',
+        'base',
+        'br',
+        'col',
+        'embed',
+        'hr',
+        'img',
+        'input',
+        'link',
+        'meta',
+        'param',
+        'source',
+        'track',
+        'wbr',
+    ];
+
+    public function __construct(ContextInterface $context)
+    {
+        $this->context = $context;
+    }
+
+    public function __toString()
+    {
+        return $this->render();
+    }
+
+    public function render()
+    {
+        return sprintf(
+            $this->template(),
+            $this->context->tag(),
+            $this->renderAttributes(),
+            $this->renderChildren()
+        );
+    }
+
+    protected function template()
+    {
+        return in_array($this->context->tag(), $this->voidTags) ?
+            static::VOID_TAG_TEMPLATE :
+            static::FULL_TAG_TEMPLATE;
+    }
+
+    protected function renderAttributes()
+    {
+        $attributes = $this->context->attributes();
+
+        if ($this->context->block() && $this->context->bem()) {
+            $this->resolveBemAttributes($attributes);
+        }
+
+        if ($this->context->classes()) {
+            $attributes['class'] = isset($attributes['class']) ?
+                array_merge($attributes['class'], $this->context->classes()) :
+                $this->context->classes();
+        }
+
+        return join(' ', array_map(function ($key, $value) {
+            return $this->renderAttribute($key, $value);
+        }, array_keys($attributes), $attributes));
+    }
+
+    protected function renderAttribute($key, $value)
+    {
+        if (is_int($key)) {
+            return $value;
+        }
+
+        return sprintf('%s="%s"', $key, $this->entities($value));
+    }
+
+    protected function resolveBemAttributes(array $attributes)
+    {
+        $base = $this->context->block() . ($this->context->element() ? '__' . $this->context->element() : '');
+
+        $classes = $this->resolveBemClasses($base);
+
+        if ($this->context->js()) {
+            $classes[] = 'i-bem';
+
+            $jsParams[$base] = (true === $this->context->js()) ? [] : $this->context->js();
+
+            $attributes['data-bem'] = json_encode($jsParams);
+        }
+
+        $attributes['class'] = $classes;
+    }
+
+    protected function resolveBemClasses($base)
+    {
+        $classes[] = $base;
+
+        foreach ($this->context->modifiers() as $key => $value) {
+            if (!$value) {
+                continue;
+            }
+
+            $classes[] = $base . '_' . $key . (true === $value ? '' : '_' . $value);
+        }
+
+        return $classes;
+    }
+
+    protected function renderChildren()
+    {
+        if (is_array($this->context->content())) {
+            return join('', function ($child) {
+                return $this->renderChild($child);
+            }, $this->context->content());
+        }
+
+        return $this->renderChild($this->context->content());
+    }
+
+    protected function renderChild($child)
+    {
+        if (is_string($child)) {
+            return $this->entities($child);
+        } elseif ($child instanceof ContextInterface) {
+            return new static($child);
+        }
+
+        return '';
+    }
+
+    protected function entities($value)
+    {
+        return htmlentities($value, ENT_HTML5);
+    }
+}
