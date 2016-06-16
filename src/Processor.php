@@ -1,6 +1,10 @@
 <?php namespace Lego\DSL;
 
-class ContextProcessor
+/**
+ * Class Processor
+ * @package Lego\DSL
+ */
+class Processor
 {
     /**
      * Context instance.
@@ -12,6 +16,11 @@ class ContextProcessor
      * @var array
      */
     protected $nodes = [];
+    /**
+     * Compiled matchers.
+     * @var Closure
+     */
+    protected $compiledMatchers;
 
     public function __construct(ContextInterface $context)
     {
@@ -101,19 +110,13 @@ class ContextProcessor
         return $result[0];
     }
 
-    protected function children(array $children)
-    {
-        foreach ($children as $index => $child) {
-            if (!$child instanceof ContextInterface) {
-                continue;
-            }
 
-            $nodes[] = [
-                'index'   => $index,
-                'block'   => $nodeBlock,
-                'context' => $child,
-                'result'  => $nodeContext,
-            ];
+    protected function getCompiledMatchers()
+    {
+        if (null === $this->compiledMatchers) {
+            $this->compiledMatchers = (new MatcherCompiler($this->matcherCollection))->compile();
         }
+
+        return $this->compiledMatchers;
     }
 }
