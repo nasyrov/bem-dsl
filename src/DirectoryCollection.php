@@ -32,7 +32,7 @@ class DirectoryCollection implements DirectoryCollectionInterface
         } elseif (false !== array_search($path, $this->directories)) {
             throw new LogicException(sprintf('The "%s" directory path is already being used.', $path));
         } else {
-            $this->iterate($path);
+            $this->load($path);
 
             $this->directories[] = $path;
         }
@@ -40,7 +40,12 @@ class DirectoryCollection implements DirectoryCollectionInterface
         return $this;
     }
 
-    protected function iterate($path)
+    /**
+     * Registers all the matchers in the given directory path.
+     *
+     * @param string $path
+     */
+    protected function load($path)
     {
         $engine = $this->engine;
 
@@ -52,7 +57,7 @@ class DirectoryCollection implements DirectoryCollectionInterface
          * @var $entry \SplFileInfo
          */
         foreach ($regexIterator as $entry) {
-            include $entry->getPathname();
+            require_once $entry->getPathname();
         }
     }
 }
