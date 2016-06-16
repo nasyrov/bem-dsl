@@ -63,7 +63,7 @@ class Engine
     /**
      * Renders given context.
      *
-     * @param string|array|ContextInterface $context
+     * @param string|ContextInterface|array $context
      *
      * @return string
      */
