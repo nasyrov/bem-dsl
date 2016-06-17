@@ -14,7 +14,8 @@ $engine->matcher('page', function (ContextInterface $context) {
                 (new Context)->element('meta')->attributes([
                     'http-equiv' => 'x-ua-compatible',
                     'content'    => 'ie=edge',
-                ])
+                ]),
+                (new Context)->block('ua')
             ),
             $context
         ),
