@@ -182,8 +182,8 @@ class Element implements ElementInterface
      */
     protected function renderChild($child)
     {
-        if (is_string($child)) {
-            return $this->entities($child);
+        if (is_scalar($child)) {
+            return $child;
         } elseif ($child instanceof ContextInterface) {
             return new static($child);
         }
