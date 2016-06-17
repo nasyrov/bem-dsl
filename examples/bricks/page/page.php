@@ -12,9 +12,10 @@ $engine->matcher('page', function (ContextInterface $context) {
             (new Context)->element('head')->content(
                 (new Context)->element('meta')->attributes('charset', 'utf-8'),
                 (new Context)->element('meta')->attributes([
-                    'http-equiv' => 'x-ua-compatible',
                     'content'    => 'ie=edge',
-                ])
+                    'http-equiv' => 'x-ua-compatible',
+                ]),
+                (new Context)->block('ua')
             ),
             $context
         ),
