@@ -56,6 +56,8 @@ class ContextProcessor implements ContextProcessorInterface
                 $nodeBlock = $nodeContext->block();
             }
 
+            $context->node($node);
+
             $compiledResult = $compiledMatchers($nodeContext);
             if (null !== $compiledResult) {
                 $nodeContext = $compiledResult;

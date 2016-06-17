@@ -99,6 +99,15 @@ interface ContextInterface
     public function content(...$content);
 
     /**
+     * Sets and gets node.
+     *
+     * @param null|array $node
+     *
+     * @return array|ContextInterface
+     */
+    public function node(array $node);
+
+    /**
      * Sets and gets matchers.
      *
      * @param string $key
