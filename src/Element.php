@@ -47,17 +47,22 @@ class Element implements ElementInterface
 
     public function render()
     {
-        if (in_array($this->context->tag(), $this->voidTags)) {
+        $tag = $this->context->tag();
+        $tag = $tag ?: 'div';
+
+        $this->context->tag($tag);
+
+        if (in_array($tag, $this->voidTags)) {
             return sprintf(
                 static::VOID_TAG_TEMPLATE,
-                $this->context->tag(),
+                $tag,
                 $this->renderAttributes()
             );
         }
 
         return sprintf(
             static::FULL_TAG_TEMPLATE,
-            $this->context->tag(),
+            $tag,
             $this->renderAttributes(),
             $this->renderChildren()
         );
