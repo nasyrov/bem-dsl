@@ -57,6 +57,11 @@ class Context implements ContextInterface
      */
     protected $content;
     /**
+     * Node.
+     * @var array
+     */
+    protected $node;
+    /**
      * Collection of matchers.
      * @var array
      */
@@ -180,6 +185,17 @@ class Context implements ContextInterface
         }
 
         $this->content = $content;
+
+        return $this;
+    }
+
+    public function node(array $node = null)
+    {
+        if (null === $node) {
+            return $this->node;
+        }
+
+        $this->node = $node;
 
         return $this;
     }

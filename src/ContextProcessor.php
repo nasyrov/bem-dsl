@@ -1,27 +1,21 @@
 <?php namespace Lego\DSL;
 
-use Closure;
-
-/**
- * Class ContextProcessor
- * @package Lego\DSL
- */
-class ContextProcessor
+class ContextProcessor implements ContextProcessorInterface
 {
     /**
-     * Compiled matchers.
-     * @var Closure
+     * MatcherCompiler instance.
+     * @var MatcherCompiler
      */
-    protected $compiledMatchers;
+    protected $matcherCompiler;
 
-    public function __construct(Closure $compiledMatchers)
+    public function __construct(MatcherCompilerInterface $matcherCompiler)
     {
-        $this->compiledMatchers = $compiledMatchers;
+        $this->matcherCompiler = $matcherCompiler;
     }
 
-    public function process(ContextInterface $context)
+    public function process($context)
     {
-        $compiledMatchers = $this->compiledMatchers;
+        $compiledMatchers = $this->matcherCompiler->compile();
 
         $result = [$context];
 
@@ -61,6 +55,8 @@ class ContextProcessor
             } elseif ($nodeContext->block()) {
                 $nodeBlock = $nodeContext->block();
             }
+
+            $context->node($node);
 
             $compiledResult = $compiledMatchers($nodeContext);
             if (null !== $compiledResult) {

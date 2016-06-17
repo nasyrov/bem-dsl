@@ -47,17 +47,22 @@ class Element implements ElementInterface
 
     public function render()
     {
-        if (in_array($this->context->tag(), $this->voidTags)) {
+        $tag = $this->context->tag();
+        $tag = $tag ?: 'div';
+
+        $this->context->tag($tag);
+
+        if (in_array($tag, $this->voidTags)) {
             return sprintf(
                 static::VOID_TAG_TEMPLATE,
-                $this->context->tag(),
+                $tag,
                 $this->renderAttributes()
             );
         }
 
         return sprintf(
             static::FULL_TAG_TEMPLATE,
-            $this->context->tag(),
+            $tag,
             $this->renderAttributes(),
             $this->renderChildren()
         );
@@ -177,8 +182,8 @@ class Element implements ElementInterface
      */
     protected function renderChild($child)
     {
-        if (is_string($child)) {
-            return $this->entities($child);
+        if (is_scalar($child)) {
+            return $child;
         } elseif ($child instanceof ContextInterface) {
             return new static($child);
         }

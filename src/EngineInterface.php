@@ -15,7 +15,7 @@ interface EngineInterface
      *
      * @return EngineInterface
      */
-    public function addMatcherDirectory($path);
+    public function directory($path);
 
     /**
      * Registers a matcher with the specified expression.
@@ -25,7 +25,7 @@ interface EngineInterface
      *
      * @return EngineInterface
      */
-    public function registerMatcher($expression, Closure $closure);
+    public function matcher($expression, Closure $closure);
 
     /**
      * Renders given context.
