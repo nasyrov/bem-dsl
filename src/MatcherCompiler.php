@@ -4,7 +4,7 @@
  * Class MatcherCompiler.
  * @package Lego\DSL
  */
-class MatcherCompiler
+class MatcherCompiler implements MatcherCompilerInterface
 {
     /**
      * MatcherCollection instance.
@@ -12,11 +12,6 @@ class MatcherCompiler
      */
     protected $matcherCollection;
 
-    /**
-     * Create new MatcherCompiler instance
-     *
-     * @param MatcherCollectionInterface $matcherCollection
-     */
     public function __construct(MatcherCollectionInterface $matcherCollection)
     {
         $this->matcherCollection = $matcherCollection;

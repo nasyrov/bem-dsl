@@ -19,48 +19,44 @@ class Engine implements EngineInterface
      */
     protected $matcherCollection;
     /**
-     * MatcherCompiler instance.
-     * @var MatcherCompiler
+     * MatcherCompilerInterface instance.
+     * @var MatcherCompilerInterface
      */
     protected $matcherCompiler;
+    /**
+     * ContextProcessorInterface instance.
+     * @var ContextProcessorInterface
+     */
+    protected $contextProcessor;
 
     /**
      * Creates new Engine instance.
      */
     public function __construct()
     {
-        $this->matcherLoader     = new MatcherLoader($this);
         $this->matcherCollection = new MatcherCollection;
+        $this->matcherLoader     = new MatcherLoader($this);
         $this->matcherCompiler   = new MatcherCompiler($this->matcherCollection);
+        $this->contextProcessor  = new ContextProcessor($this->matcherCompiler);
     }
 
-    public function addMatcherDirectory($path)
+    public function directory($path)
     {
         $this->matcherLoader->load($path);
 
         return $this;
     }
 
-    public function registerMatcher($expression, Closure $closure)
+    public function matcher($expression, Closure $closure)
     {
         $this->matcherCollection->add($expression, $closure);
-
-        //$this->matcherCompiler->reset();
 
         return $this;
     }
 
     public function render($context)
     {
-        return $this->stringify($this->process($context));
-    }
-
-    protected function process($context)
-    {
-        $compiledMatchers = $this->matcherCompiler->compile();
-        $contextProcessor = new ContextProcessor($compiledMatchers);
-
-        return $contextProcessor->process($context);
+        return $this->stringify($this->contextProcessor->process($context));
     }
 
     protected function stringify($context)

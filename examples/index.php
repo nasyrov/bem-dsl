@@ -8,7 +8,7 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 // setup the engine
 $engine = new Engine;
-$engine->addMatcherDirectory(__DIR__ . '/bricks');
+$engine->directory(__DIR__ . '/bricks');
 
 // render
 echo $engine->render(

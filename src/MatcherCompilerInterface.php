@@ -1,7 +1,24 @@
-<?php
+<?php namespace Lego\DSL;
+
+use Closure;
+
 /**
- * Created by PhpStorm.
- * User: nasyrovevgenii
- * Date: 17/06/2016
- * Time: 12:27
+ * Interface MatcherCompilerInterface.
+ * @package Lego\DSL
  */
+interface MatcherCompilerInterface
+{
+    /**
+     * Create new MatcherCompiler instance
+     *
+     * @param MatcherCollectionInterface $matcherCollection
+     */
+    public function __construct(MatcherCollectionInterface $matcherCollection);
+
+    /**
+     * Compiles all the matchers.
+     *
+     * @return Closure
+     */
+    public function compile();
+}
