@@ -4,7 +4,7 @@
  * Class MatcherCompiler.
  * @package Lego\DSL
  */
-class MatcherCompiler
+class MatcherCompiler implements MatcherCompilerInterface
 {
     /**
      * MatcherCollection instance.
@@ -12,11 +12,6 @@ class MatcherCompiler
      */
     protected $matcherCollection;
 
-    /**
-     * Create new MatcherCompiler instance
-     *
-     * @param MatcherCollectionInterface $matcherCollection
-     */
     public function __construct(MatcherCollectionInterface $matcherCollection)
     {
         $this->matcherCollection = $matcherCollection;
@@ -48,7 +43,7 @@ class MatcherCompiler
                         }
 
                         $conditions[] = sprintf(
-                            '$context.mods() && $context.mods("%s") === %s',
+                            '$context.mods() && %s === $context.mods("%s")',
                             $elemDeclaration[$modKey],
                             $elemDeclaration[$modVal] === true ? 'true' : sprintf('"%s"', $elemDeclaration[$modVal])
                         );
@@ -75,7 +70,7 @@ class MatcherCompiler
 
         $constructor = eval(join("\n", $eval));
 
-        return $constructor($this->matcherCollection->closures());
+        return $constructor($this->matcherCollection->getClosures());
     }
 
     protected function extractBemNotation($expression)
@@ -104,7 +99,7 @@ class MatcherCompiler
     {
         $declarations = [];
 
-        foreach ($this->matcherCollection->expressions() as $index => $expression) {
+        foreach ($this->matcherCollection->getExpressions() as $index => $expression) {
             $declarations[] = array_merge([
                 'index' => $index,
             ], $this->extractBemNotation($expression));
