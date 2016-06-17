@@ -1,35 +1,27 @@
 <?php namespace Lego\DSL;
 
+use Closure;
+
 /**
- * Class Processor
+ * Class ContextProcessor
  * @package Lego\DSL
  */
-class Processor
+class ContextProcessor
 {
-    /**
-     * Context instance.
-     * @var ContextInterface
-     */
-    protected $context;
-    /**
-     * Collection of nodes.
-     * @var array
-     */
-    protected $nodes = [];
     /**
      * Compiled matchers.
      * @var Closure
      */
     protected $compiledMatchers;
 
-    public function __construct(ContextInterface $context)
+    public function __construct(Closure $compiledMatchers)
     {
-        $this->context = $context;
+        $this->compiledMatchers = $compiledMatchers;
     }
 
-    protected function process(ContextInterface $context)
+    public function process(ContextInterface $context)
     {
-        $compiledMatchers = $this->getCompiledMatchers();
+        $compiledMatchers = $this->compiledMatchers;
 
         $result = [$context];
 
@@ -108,15 +100,5 @@ class Processor
         }
 
         return $result[0];
-    }
-
-
-    protected function getCompiledMatchers()
-    {
-        if (null === $this->compiledMatchers) {
-            $this->compiledMatchers = (new MatcherCompiler($this->matcherCollection))->compile();
-        }
-
-        return $this->compiledMatchers;
     }
 }

@@ -15,7 +15,7 @@ interface EngineInterface
      *
      * @return EngineInterface
      */
-    public function addDirectory($path);
+    public function addMatcherDirectory($path);
 
     /**
      * Registers a matcher with the specified expression.

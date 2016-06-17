@@ -29,12 +29,12 @@ class Engine implements EngineInterface
      */
     public function __construct()
     {
-        $this->matcherCollection = new MatcherCollection;
         $this->matcherLoader     = new MatcherLoader($this);
+        $this->matcherCollection = new MatcherCollection;
         $this->matcherCompiler   = new MatcherCompiler($this->matcherCollection);
     }
 
-    public function addDirectory($path)
+    public function addMatcherDirectory($path)
     {
         $this->matcherLoader->load($path);
 
@@ -45,10 +45,25 @@ class Engine implements EngineInterface
     {
         $this->matcherCollection->add($expression, $closure);
 
+        //$this->matcherCompiler->reset();
+
         return $this;
     }
 
     public function render($context)
+    {
+        return $this->stringify($this->process($context));
+    }
+
+    protected function process($context)
+    {
+        $compiledMatchers = $this->matcherCompiler->compile();
+        $contextProcessor = new ContextProcessor($compiledMatchers);
+
+        return $contextProcessor->process($context);
+    }
+
+    protected function stringify($context)
     {
         if (is_scalar($context)) {
             return (string)$context;
@@ -56,7 +71,7 @@ class Engine implements EngineInterface
             return new Element($context);
         } elseif (is_array($context)) {
             return join('', array_map(function ($context) {
-                return $this->render($context);
+                return $this->stringify($context);
             }, $context));
         }
 

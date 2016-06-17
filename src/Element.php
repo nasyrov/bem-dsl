@@ -82,7 +82,9 @@ class Element implements ElementInterface
                 $this->context->classes();
         }
 
-        return join(' ', array_map(function ($key, $value) {
+        ksort($attributes);
+
+        return implode('', array_map(function ($key, $value) {
             return $this->renderAttribute($key, $value);
         }, array_keys($attributes), $attributes));
     }
@@ -98,10 +100,12 @@ class Element implements ElementInterface
     protected function renderAttribute($key, $value)
     {
         if (is_int($key)) {
-            return $value;
+            return sprintf(' %s', $key);
+        } elseif (is_array($value)) {
+            $value = implode(' ', $value);
         }
 
-        return sprintf('%s="%s"', $key, $this->entities($value));
+        return sprintf(' %s="%s"', $key, $this->entities($value));
     }
 
     /**
@@ -109,7 +113,7 @@ class Element implements ElementInterface
      *
      * @param array $attributes
      */
-    protected function resolveBemAttributes(array $attributes)
+    protected function resolveBemAttributes(array &$attributes)
     {
         $base = $this->context->block() . ($this->context->element() ? '__' . $this->context->element() : '');
 
@@ -191,6 +195,6 @@ class Element implements ElementInterface
      */
     protected function entities($value)
     {
-        return htmlentities($value, ENT_HTML5);
+        return htmlentities($value, ENT_QUOTES, 'utf-8');
     }
 }

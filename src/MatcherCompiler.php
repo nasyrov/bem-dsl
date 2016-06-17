@@ -48,7 +48,7 @@ class MatcherCompiler
                         }
 
                         $conditions[] = sprintf(
-                            '$context.mods() && $context.mods("%s") === %s',
+                            '$context.mods() && %s === $context.mods("%s")',
                             $elemDeclaration[$modKey],
                             $elemDeclaration[$modVal] === true ? 'true' : sprintf('"%s"', $elemDeclaration[$modVal])
                         );
