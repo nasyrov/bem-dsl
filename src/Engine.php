@@ -1,48 +1,64 @@
 <?php namespace Lego\DSL;
 
 use Closure;
+use Lego\DSL\Context\ContextInterface;
+use Lego\DSL\Context\ContextProcessor;
+use Lego\DSL\Context\ContextRender;
+use Lego\DSL\Matcher\MatcherCollection;
+use Lego\DSL\Matcher\MatcherCompiler;
+use Lego\DSL\Matcher\MatcherLoader;
 
-/**
- * Class Engine.
- * @package Lego\DSL
- */
 class Engine implements EngineInterface
 {
     /**
-     * MatcherLoaderInterface instance.
-     * @var MatcherLoaderInterface
+     * @var Engine
      */
-    protected $matcherLoader;
-    /**
-     * MatcherCollectionInterface instance.
-     * @var MatcherCollectionInterface
-     */
-    protected $matcherCollection;
-    /**
-     * MatcherCompilerInterface instance.
-     * @var MatcherCompilerInterface
-     */
-    protected $matcherCompiler;
-    /**
-     * ContextProcessorInterface instance.
-     * @var ContextProcessorInterface
-     */
-    protected $contextProcessor;
+    private static $instance;
 
-    /**
-     * Creates new Engine instance.
-     */
-    public function __construct()
+    protected $matcherLoader;
+    protected $matcherCollection;
+    protected $matcherCompiler;
+    protected $contextProcessor;
+    protected $contextRender;
+
+    final public static function instance()
     {
-        $this->matcherCollection = new MatcherCollection;
-        $this->matcherLoader     = new MatcherLoader($this);
-        $this->matcherCompiler   = new MatcherCompiler($this->matcherCollection);
-        $this->contextProcessor  = new ContextProcessor($this->matcherCompiler);
+        if (null === static::$instance) {
+            static::$instance = new static;
+        }
+
+        return static::$instance;
     }
 
-    public function directory($path)
+    /**
+     * Prevents creating a new instance.
+     */
+    protected function __construct()
     {
-        $this->matcherLoader->load($path);
+        $this->matcherLoader     = new MatcherLoader;
+        $this->matcherCollection = new MatcherCollection;
+        $this->matcherCompiler   = new MatcherCompiler($this->matcherCollection);
+        $this->contextProcessor  = new ContextProcessor($this->matcherCompiler);
+        $this->contextRender     = new ContextRender;
+    }
+
+    /**
+     * Prevents cloning an instance.
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * Prevents unserializing an instance.
+     */
+    private function __wakeup()
+    {
+    }
+
+    public function directory($directory)
+    {
+        $this->matcherLoader->load($directory);
 
         return $this;
     }
@@ -54,26 +70,10 @@ class Engine implements EngineInterface
         return $this;
     }
 
-    public function render($context)
+    public function render(ContextInterface $context)
     {
-        return $this->stringify($this->contextProcessor->process($context));
-    }
-
-    protected function stringify($context)
-    {
-        if (is_scalar($context)) {
-            return (string)$context;
-        } elseif ($context instanceof ContextInterface) {
-            return new Element($context);
-        } elseif (is_array($context)) {
-            return join('', array_map(function ($context) {
-                return $this->stringify($context);
-            }, $context));
-        }
-
-        throw new \LogicException(sprintf(
-            'Context "%s" type cannot be rendered.',
-            gettype($context)
-        ));
+        return $this->contextRender->render(
+            $this->contextProcessor->process($context)
+        );
     }
 }

@@ -1,38 +1,18 @@
 <?php namespace Lego\DSL;
 
 use Closure;
+use Lego\DSL\Context\ContextInterface;
 
-/**
- * Interface EngineInterface.
- * @package Lego\DSL
- */
 interface EngineInterface
 {
     /**
-     * Adds a directory path.
-     *
-     * @param string|array $path
+     * Returns the EngineInterface instance of this class.
      *
      * @return EngineInterface
      */
-    public function directory($path);
+    public static function instance();
 
-    /**
-     * Registers a matcher with the specified expression.
-     *
-     * @param string|array $expression
-     * @param Closure $closure
-     *
-     * @return EngineInterface
-     */
     public function matcher($expression, Closure $closure);
 
-    /**
-     * Renders given context.
-     *
-     * @param string|ContextInterface|array $context
-     *
-     * @return string
-     */
-    public function render($context);
+    public function render(ContextInterface $context);
 }
