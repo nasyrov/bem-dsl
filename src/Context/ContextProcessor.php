@@ -68,7 +68,6 @@ class ContextProcessor
                                           ->result($nodeContent);
                 }
             }
-
         }
 
         return $result[0];

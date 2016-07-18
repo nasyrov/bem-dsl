@@ -12,7 +12,6 @@ class Context implements ContextInterface
     protected $element;
     protected $mixes = [];
     protected $modifiers = [];
-    protected $parameters = [];
     protected $bem;
     protected $js;
     protected $node;
@@ -111,21 +110,6 @@ class Context implements ContextInterface
             return isset($this->modifiers[$key]) ? $this->modifiers[$key] : null;
         } elseif (!isset($this->modifiers[$key]) || $force) {
             $this->modifiers[$key] = $value;
-        }
-
-        return $this;
-    }
-
-    public function parameters($key = null, $value = null, $force = false)
-    {
-        if (null === $key) {
-            return $this->parameters;
-        } elseif (is_array($key)) {
-            foreach ($key as $_key => $_value) {
-                $this->parameters($_key, $_value, (bool)$value);
-            }
-        } elseif (!isset($this->parameters[$key]) || $force) {
-            $this->parameters[$key] = $value;
         }
 
         return $this;

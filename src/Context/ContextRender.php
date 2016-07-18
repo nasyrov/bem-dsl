@@ -1,5 +1,7 @@
 <?php namespace Lego\DSL\Context;
 
+use Closure;
+
 class ContextRender
 {
     const SHORT_TAGS = [
@@ -34,6 +36,8 @@ class ContextRender
             return implode('', array_map(function ($context) {
                 return $this->render($context);
             }, $context));
+        } elseif ($context instanceof Closure) {
+            return $this->render($context());
         } elseif ($context instanceof ContextInterface) {
             return $this->context($context);
         }
@@ -41,8 +45,7 @@ class ContextRender
 
     protected function context(ContextInterface $context)
     {
-        $this->classes = $this->js = [];
-
+        $this->classes    = $this->js = [];
         $this->attributes = $context->attributes() ?: [];
 
         if (false !== $context->bem()) {
@@ -108,11 +111,6 @@ class ContextRender
             $this->renderAttributes(),
             $this->render($context->content())
         );
-    }
-
-    protected function applyMixes()
-    {
-
     }
 
     protected function renderAttributes()

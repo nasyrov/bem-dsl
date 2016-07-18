@@ -8,16 +8,17 @@ use function Lego\DSL\matcher as m;
 use function Lego\DSL\tag as t;
 
 m('page', function (ContextInterface $context) {
-    $context->tag('body')->content($context->content(), true);
+    $context->tag('body')
+            ->content($context->content(), true);
 
     return [
-        '<!doctype html>',
+        '<!DOCTYPE html>',
         t('html')->classes(['ua_js_no'])->content([
             e('head')->content([
-                e('meta')->attributes('charset', 'utf-8'),
+                t('meta')->attributes('charset', 'utf-8'),
                 e('meta')->attributes([
-                    'http-equiv' => 'x-ua-compatible',
-                    'content'    => 'ie=edge',
+                    'http-equiv' => 'X-UA-Compatible',
+                    'content'    => 'IE=edge',
                 ]),
                 b('ua')
             ]),

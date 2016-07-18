@@ -24,7 +24,5 @@ interface ContextInterface
 
     public function js($js, $force);
 
-    public function parameters($key, $value, $force);
-
     public function node(NodeInterface $node);
 }

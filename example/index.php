@@ -83,6 +83,9 @@ echo r(
             '&copy;',
             b('link')->attributes('href', 'http://bem.info')->content('BEM team'),
             '2016'
-        ])
+        ]),
+        b('test')->content(function () {
+            return 'test';
+        })
     ])
 ), "\n";

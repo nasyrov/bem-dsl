@@ -2,12 +2,7 @@
 
 class MatcherCompiler implements MatcherCompilerInterface
 {
-    protected static $appliedMatchers = [];
     protected $matcherCollection;
-
-    public static function appliedMatchers($context, $matcher)
-    {
-    }
 
     public function __construct(MatcherCollectionInterface $matcherCollection)
     {
