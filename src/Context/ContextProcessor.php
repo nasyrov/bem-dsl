@@ -16,76 +16,79 @@ class ContextProcessor
     {
         $result = [$context];
 
-        $nodes[] = NodeFactory::create()
-                              ->block($context->block())
-                              ->content($context)
-                              ->result($result);
+        $nodes[] = [
+            'index'   => 0,
+            'block'   => $context->block(),
+            'context' => $context,
+        ];
 
         $compiledMatcher = $this->matcherCompiler->compile();
 
-        /**
-         * @var $node \Lego\DSL\Node\NodeInterface
-         */
-        while ($node = array_pop($nodes)) {
-            $nodeBlock   = $node->block();
-            $nodeContent = $node->content();
+        while ($node = array_shift($nodes)) {
+            $nodeBlock   = $node['block'];
+            $nodeContext = $node['context'];
 
-            if (is_array($nodeContent)) {
-                $this->сhildren($nodes, $nodeContent, $nodeBlock);
+            if (is_array($nodeContext)) {
+                foreach ($nodeContext as $index => $child) {
+                    if (!$child instanceof ContextInterface) {
+                        continue;
+                    }
 
-                $result[$node->index()] = $nodeContent;
-
-                continue;
-            } elseif ($nodeContent instanceof ContextInterface) {
-                if ($nodeContent->element()) {
-                    $nodeBlock = $nodeContent->block() ?: $nodeBlock;
-
-                    $nodeContent->block($nodeBlock);
-                } elseif ($nodeContent->block()) {
-                    $nodeBlock = $nodeContent->block();
+                    $nodes[] = [
+                        'index'   => $index,
+                        'block'   => $nodeBlock,
+                        'context' => $child,
+                    ];
                 }
 
-                $nodeContent->node($node);
+                $result[$node['index']] = $nodeContext;
 
-                $compiledResult = $compiledMatcher($nodeContent);
+                continue;
+            } elseif ($nodeContext instanceof ContextInterface) {
+                if ($nodeContext->element()) {
+                    $nodeBlock = $nodeContext->block() ?: $nodeBlock;
+                    $nodeContext->block($nodeBlock);
+                } elseif ($nodeContext->block()) {
+                    $nodeBlock = $nodeContext->block();
+                }
+
+                $compiledResult = $compiledMatcher($nodeContext);
                 if (null !== $compiledResult) {
-                    $nodes[] = $node->block($nodeBlock)->content($compiledResult);
+                    echo $node['block'], ' : ', $nodeBlock, "\n";
+                    $node['block']   = $nodeBlock;
+                    $node['context'] = $compiledResult;
+
+                    $nodes[] = $node;
 
                     continue;
                 }
 
-                if ($nodeContent->content()) {
-                    if (is_array($nodeContent->content())) {
-                        $this->сhildren($nodes, $nodeContent->content(), $nodeBlock);
+                if ($nodeContext->content()) {
+                    if (is_array($nodeContext->content())) {
+                        foreach ($nodeContext as $index => $child) {
+                            if (!$child instanceof ContextInterface) {
+                                continue;
+                            }
+
+                            $nodes[] = [
+                                'index'   => $index,
+                                'block'   => $nodeBlock,
+                                'context' => $child,
+                            ];
+                        }
 
                         continue;
                     }
 
-                    $nodes[] = NodeFactory::create()
-                                          ->index('content')
-                                          ->block($nodeBlock)
-                                          ->content($nodeContent->content())
-                                          ->result($nodeContent);
+                    $nodes[] = [
+                        'index'   => 'content',
+                        'block'   => $nodeBlock,
+                        'context' => $nodeContext->content(),
+                    ];
                 }
             }
         }
 
         return $result[0];
-    }
-
-    protected function сhildren(array &$nodes, array $children, $block)
-    {
-        foreach ($children as $index => $child) {
-            if (!$child instanceof ContextInterface) {
-                continue;
-            }
-
-            $nodes[] = NodeFactory::create()
-                                  ->index($index)
-                                  ->block($block)
-                                  ->position($index + 1)
-                                  ->content($child)
-                                  ->result($children);
-        }
     }
 }
