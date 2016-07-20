@@ -1,30 +1,26 @@
 <?php namespace Lego\DSL;
 
-use Closure;
-use Lego\DSL\Context\Context;
-use Lego\DSL\Context\ContextInterface;
-
-function matcher($expression, Closure $closure)
+function match($expr, $func)
 {
-    return Engine::instance()->matcher($expression, $closure);
+    return Engine::instance()->match($expr, $func);
 }
 
-function render(ContextInterface $context)
+function render($context)
 {
     return Engine::instance()->render($context);
 }
 
-function tag($name)
+function tag($tag, array $params = [])
 {
-    return (new Context)->tag($name);
+    return new Entity(array_merge(['tag' => $tag], $params));
 }
 
-function block($name)
+function block($block, array $params = [])
 {
-    return (new Context)->block($name);
+    return new Entity(array_merge(['block' => $block], $params));
 }
 
-function element($name)
+function elem($elem, array $params = [])
 {
-    return (new Context)->element($name);
+    return new Entity(array_merge(['elem' => $elem], $params));
 }

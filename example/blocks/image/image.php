@@ -1,12 +1,12 @@
 <?php
 
-use Lego\DSL\Context\ContextInterface;
-use function Lego\DSL\matcher as m;
 
-m('image', function (ContextInterface $context) {
+use function Lego\DSL\match as m;
+
+m('image', function ($context) {
     if ($context->content()) {
         $context->tag('span')
-                ->attributes('role', 'img');
+                ->attr('role', 'img');
     } else {
         $context->tag('img');
     }

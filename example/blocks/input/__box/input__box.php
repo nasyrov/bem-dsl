@@ -1,8 +1,8 @@
 <?php
 
-use Lego\DSL\Context\ContextInterface;
-use function Lego\DSL\matcher as m;
 
-m('input__box', function (ContextInterface $context) {
-    $context->tag('span');
+use function Lego\DSL\match as m;
+
+m('input__box', function ($ctx) {
+    $ctx->tag('span');
 });

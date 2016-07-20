@@ -1,9 +1,9 @@
 <?php
 
-use Lego\DSL\Context\ContextInterface;
-use function Lego\DSL\matcher as m;
 
-m('ua__svg', function (ContextInterface $context) {
+use function Lego\DSL\match as m;
+
+m('ua__svg', function ($context) {
     $context->content([
         $context->content(),
         '(function(d,n){',

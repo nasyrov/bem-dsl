@@ -1,20 +1,14 @@
 <?php
 
-use Lego\DSL\Context;
-use Lego\DSL\Context\ContextInterface;
-use function Lego\DSL\element as e;
-use function Lego\DSL\matcher as m;
+use function Lego\DSL\elem as e;
+use function Lego\DSL\match as m;
 
-m('input', function (ContextInterface $context) {
-    $attributes = $context->attributes();
-
-    $context->js(true)
-            ->tag('span')
-            ->attributes([], true)
-            ->content(
-                e('box')->content(
-                    e('control')->attributes($attributes)
-                ),
-                true
-            );
+m('input', function ($ctx, $arr) {
+    $ctx->tag('span')
+        ->js(true)
+        ->tParam('_input', $arr)
+        ->content(
+            e('box', ['content' => e('control')]),
+            true
+        );
 });

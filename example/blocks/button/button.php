@@ -1,8 +1,32 @@
 <?php
 
-use Lego\DSL\Context\ContextInterface;
-use function Lego\DSL\matcher as m;
+use function Lego\DSL\match as m;
+use function Lego\DSL\elem as e;
 
-m('button', function (ContextInterface $context) {
-    $context->tag('button');
+m('button', function ($ctx, $arr) {
+    $ctx->tag($arr->tag ?: 'button');
+
+    $modType      = $ctx->mod('type');
+    $isRealButton = ('button' === $ctx->tag()) && (!$modType || 'submit' === $modType);
+
+    $ctx->js(true)
+        ->attrs([
+            'role'     => 'button',
+            'tabindex' => $arr->tabIndex,
+            'id'       => $arr->id,
+            'type'     => $isRealButton ? ($modType ?: 'button') : null,
+            'name'     => $arr->name,
+            'value'    => $arr->val,
+            'title'    => $arr->title,
+        ]);
+
+    if ($ctx->mod('disabled')) {
+        $isRealButton ?
+            $ctx->attr('disabled', 'disabled') :
+            $ctx->attr('aria-disabled', 'true');
+    }
+
+    if (null === $ctx->content() && $arr->text) {
+        $ctx->content(e('text', ['content' => $arr->text]));
+    }
 });

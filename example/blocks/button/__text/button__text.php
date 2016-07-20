@@ -1,8 +1,7 @@
 <?php
 
-use Lego\DSL\Context\ContextInterface;
-use function Lego\DSL\matcher as m;
+use function Lego\DSL\match as m;
 
-m('button__text', function (ContextInterface $context) {
+m('button__text', function ($context) {
     $context->tag('span');
 });

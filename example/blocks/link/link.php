@@ -1,17 +1,17 @@
 <?php
 
-use Lego\DSL\Context\ContextInterface;
-use function Lego\DSL\matcher as m;
 
-m('link', function (ContextInterface $context) {
+use function Lego\DSL\match as m;
+
+m('link', function ($context) {
     $context->tag('a')
-            ->attributes('role', 'link');
+            ->attr('role', 'link');
 
-    $url = $context->attributes('href');
+    $url = $context->attr('href');
 
-    if ($context->modifiers('disabled')) {
+    if ($context->mod('disabled')) {
         $context->js($url ? ['url' => $url] : true)
-                ->attributes('aria-disabled', true);
+                ->attr('aria-disabled', true);
     } else {
         $context->js(true);
     }
