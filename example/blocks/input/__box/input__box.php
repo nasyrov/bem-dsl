@@ -1,8 +1,5 @@
 <?php
 
-
-use function BEM\DSL\match as m;
-
-m('input__box', function ($ctx) {
+$match->add('input__box', function ($ctx, $arr) {
     $ctx->tag('span');
 });

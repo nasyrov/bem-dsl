@@ -33,7 +33,17 @@ class Generator implements GeneratorInterface
         'wbr',
     ];
 
-    protected function generate($arr)
+    public function generate($arr)
+    {
+        $this->buf = '';
+        $this->html($arr);
+        $buf = $this->buf;
+        unset($this->buf);
+
+        return $buf;
+    }
+
+    protected function html($arr)
     {
         if (!$arr) {
             $this->buf .= '';

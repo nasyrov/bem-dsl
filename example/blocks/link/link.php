@@ -1,18 +1,28 @@
 <?php
 
+$match->add('link', function ($ctx, $arr) {
+    $ctx->tag('a');
 
-use function BEM\DSL\match as m;
+    $attrs = ['role' => 'link'];
+    $url   = $arr->url;
 
-m('link', function ($context) {
-    $context->tag('a')
-            ->attr('role', 'link');
-
-    $url = $context->attr('href');
-
-    if ($context->mod('disabled')) {
-        $context->js($url ? ['url' => $url] : true)
-                ->attr('aria-disabled', true);
+    if ($ctx->mod('disabled')) {
+        $ctx->js($url ? ['url' => $url] : true)
+            ->attr('aria-disabled', true);
     } else {
-        $context->js(true);
+        if ($url) {
+            $attrs['href'] = $url;
+            $tabIndex      = $arr->tabIndex;
+        } else {
+            $tabIndex = $arr->tabIndex ?: 0;
+        }
+
+        $ctx->js(true);
     }
+
+    isset($tabIndex) && $attrs['tabindex'] = $tabIndex;
+    $arr->title && $attrs['title'] = $arr->title;
+    $arr->target && $attrs['target'] = $arr->title;
+
+    $ctx->attrs($attrs);
 });

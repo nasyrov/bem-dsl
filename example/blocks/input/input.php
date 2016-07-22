@@ -1,12 +1,11 @@
 <?php
 
-use function BEM\DSL\elem as e;
-use function BEM\DSL\match as m;
+use function BEM\DSL\element as e;
 
-m('input', function ($ctx, $arr) {
+$match->add('input', function ($ctx, $arr) {
     $ctx->tag('span')
         ->js(true)
-        ->tParam('_input', $arr)
+        ->param('_input', $arr)
         ->content(
             e('box', ['content' => e('control')]),
             true

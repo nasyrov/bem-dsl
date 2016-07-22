@@ -1,11 +1,10 @@
 <?php
 
 use function BEM\DSL\block as b;
-use function BEM\DSL\elem as e;
-use function BEM\DSL\match as m;
+use function BEM\DSL\element as e;
 use function BEM\DSL\tag as t;
 
-m('page', function ($ctx, $arr) {
+$match->add('page', function ($ctx, $arr) {
     $ctx->tag('body');
 
     return [
@@ -31,12 +30,12 @@ m('page', function ($ctx, $arr) {
     ];
 });
 
-m('page__head', function ($ctx) {
+$match->add('page__head', function ($ctx) {
     $ctx->bem(false)
         ->tag('head');
 });
 
-m('page__meta', function ($ctx) {
+$match->add('page__meta', function ($ctx) {
     $ctx->bem(false)
         ->tag('meta');
 });

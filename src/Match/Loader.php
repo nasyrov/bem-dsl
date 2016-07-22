@@ -1,17 +1,19 @@
 <?php namespace BEM\DSL\Match;
 
-use BEM\DSL\EngineInterface;
 use Iterator;
 use LogicException;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use RegexIterator;
 
 class Loader implements LoaderInterface
 {
-    protected $engine;
+    protected $collection;
     protected $directories = [];
 
-    public function __construct(EngineInterface $engine)
+    public function __construct(Collection $collection)
     {
-        $this->engine = $engine;
+        $this->collection = $collection;
     }
 
     public function setDirectories(array $directories)
@@ -56,7 +58,7 @@ class Loader implements LoaderInterface
      */
     protected function register(Iterator $files)
     {
-        $dsl = $this->engine;
+        $match = $this->collection;
 
         /** @var \SplFileInfo $file */
         foreach ($files as $file) {

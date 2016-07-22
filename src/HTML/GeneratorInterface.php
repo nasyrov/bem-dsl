@@ -1,6 +1,6 @@
 <?php namespace BEM\DSL\HTML;
 
-interface HTMLGeneratorInterface
+interface GeneratorInterface
 {
     /**
      * @param mixed $arr

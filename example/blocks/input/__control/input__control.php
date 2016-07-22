@@ -1,12 +1,9 @@
 <?php
 
-
-use function BEM\DSL\match as m;
-
-m('input__control', function ($ctx) {
+$match->add('input__control', function ($ctx, $arr) {
     $ctx->tag('input');
 
-    $input = $ctx->tParam('_input');
+    $input = $ctx->param('_input');
     $attrs = [
         'id'          => $input->id,
         'name'        => $input->name,

@@ -1,9 +1,8 @@
 <?php
 
-use function BEM\DSL\match as m;
-use function BEM\DSL\elem as e;
+use function BEM\DSL\element as e;
 
-m('button', function ($ctx, $arr) {
+$match->add('button', function ($ctx, $arr) {
     $ctx->tag($arr->tag ?: 'button');
 
     $modType      = $ctx->mod('type');

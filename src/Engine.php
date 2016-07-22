@@ -8,53 +8,52 @@ use Closure;
 
 class Engine implements EngineInterface
 {
-    protected $matchLoader;
-    protected $matchCollection;
-    protected $matchCompiler;
-    protected $contextProcessor;
-    protected $htmlGenerator;
+    protected $loader;
+    protected $collection;
+    protected $processor;
+    protected $generator;
 
     public function __construct(
-        LoaderInterface $matchLoader,
-        CollectionInterface $matchCollection,
-        ProcessorInterface $contextProcessor,
-        Generator $htmlGenerator
+        LoaderInterface $loader,
+        CollectionInterface $collection,
+        ProcessorInterface $processor,
+        Generator $generator
     ) {
-        $this->matchLoader      = $matchLoader;
-        $this->matchCollection  = $matchCollection;
-        $this->contextProcessor = $contextProcessor;
-        $this->htmlGenerator    = $htmlGenerator;
+        $this->loader     = $loader;
+        $this->collection = $collection;
+        $this->processor  = $processor;
+        $this->generator  = $generator;
     }
 
     public function setDirectories(array $directories)
     {
-        $this->matchLoader->setDirectories($directories);
+        $this->loader->setDirectories($directories);
 
         return $this;
     }
 
     public function setDirectory($directory)
     {
-        $this->matchLoader->setDirectory($directory);
+        $this->loader->setDirectory($directory);
 
         return $this;
     }
 
     public function match($expression, Closure $closure)
     {
-        $this->matchCollection->add($expression, $closure);
+        $this->collection->add($expression, $closure);
 
         return $this;
     }
 
     public function process($arr)
     {
-        return $this->contextProcessor->process($arr);
+        return $this->processor->process($arr);
     }
 
     public function html($arr)
     {
-        return $this->htmlGenerator->generate($arr);
+        return $this->generator->generate($arr);
     }
 
     public function apply($arr)

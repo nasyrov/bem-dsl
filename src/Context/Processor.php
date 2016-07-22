@@ -1,18 +1,19 @@
 <?php namespace BEM\DSL\Context;
 
+use BEM\DSL\Context;
 use BEM\DSL\Entity;
 use BEM\DSL\Match\CompilerInterface;
 
 class Processor implements ProcessorInterface
 {
-    protected $matchCompiler;
+    protected $compiler;
     protected $matcher;
 
     protected $nodes;
 
-    public function __construct(CompilerInterface $matchCompiler)
+    public function __construct(CompilerInterface $compiler)
     {
-        $this->matchCompiler = $matchCompiler;
+        $this->compiler = $compiler;
     }
 
     public function process($arr)
@@ -26,7 +27,7 @@ class Processor implements ProcessorInterface
             'arr'   => $arr,
         ]);
 
-        $this->matcher = $this->matcher ?: $this->matchCompiler->compile();
+        $compiledMatcher = $this->matcher = $this->matcher ?: $this->compiler->compile();
 
         $ctx = new Context;
 
@@ -35,37 +36,37 @@ class Processor implements ProcessorInterface
                 continue;
             } elseif (is_array($node->arr)) {
                 $this->children($node->arr, $node);
-            } else {
-                if ($node->arr->elem) {
-                    $node->arr->block = $node->block;
-                } elseif ($node->arr->block) {
-                    $node->block = $node->arr->block;
-                }
-
-                $ctx->node = $node;
-                $ctx->arr  = $node->arr;
-
-                $res = $this->matcher($ctx, $node->arr);
-                if (null !== $res) {
-                    $node->arr     = $res;
-                    $this->nodes[] = $node;
-
-                    continue;
-                }
-
-                if (is_array($node->arr->content)) {
-                    $this->children($node->arr->content, $node);
-                } elseif ($node->arr->content) {
-                    $this->nodes[] = new Entity([
-                        'index'  => 'content',
-                        'block'  => $node->block,
-                        'arr'    => $node->arr->content,
-                        'parent' => $node,
-                    ]);
-                }
+                $result[$node->index] = $node->arr;
+                continue;
             }
 
-            $result[$node->index] = $node->arr;
+            if ($node->arr->elem) {
+                $node->arr->block = $node->block;
+            } elseif ($node->arr->block) {
+                $node->block = $node->arr->block;
+            }
+
+            $ctx->node = $node;
+            $ctx->arr  = $node->arr;
+
+            $res = $compiledMatcher($ctx, $node->arr);
+            if (null !== $res) {
+                $node->arr     = $res;
+                $this->nodes[] = $node;
+
+                continue;
+            }
+
+            if (is_array($node->arr->content)) {
+                $this->children($node->arr->content, $node);
+            } elseif ($node->arr->content) {
+                $this->nodes[] = new Entity([
+                    'index'  => 'content',
+                    'block'  => $node->block,
+                    'arr'    => $node->arr->content,
+                    'parent' => $node,
+                ]);
+            }
         }
 
         return $result[0];

@@ -2,18 +2,21 @@
 
 class Compiler implements CompilerInterface
 {
-    protected $matchCollection;
+    protected $optDelimElem = '__';
+    protected $optDelimMod = '_';
 
-    public function __construct(CollectionInterface $matchCollection)
+    protected $collection;
+
+    public function __construct(CollectionInterface $collection)
     {
-        $this->matchCollection = $matchCollection;
+        $this->collection = $collection;
     }
 
     public function compile()
     {
         $closure = eval($this->precompile());
 
-        return $closure($this->matchCollection->closures());
+        return $closure($this->collection->closures());
     }
 
     protected function precompile()
@@ -74,7 +77,7 @@ class Compiler implements CompilerInterface
     protected function declarations()
     {
         $declarations = [];
-        foreach ($this->matchCollection->expressions() as $index => $expression) {
+        foreach ($this->collection->expressions() as $index => $expression) {
             $declarations[] = ['index' => $index] + $this->extractNotations($expression);
         }
 

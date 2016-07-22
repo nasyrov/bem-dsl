@@ -30,5 +30,5 @@ function block($block, array $params = [])
  */
 function element($element, array $params = [])
 {
-    return new Entity(['element' => $element] + $params);
+    return new Entity(['elem' => $element] + $params);
 }

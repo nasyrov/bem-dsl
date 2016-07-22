@@ -1,7 +1,10 @@
 <?php
 
+use BEM\DSL\Context\Processor;
 use BEM\DSL\Engine;
+use BEM\DSL\HTML\Generator;
 use BEM\DSL\Match\Collection;
+use BEM\DSL\Match\Compiler;
 use BEM\DSL\Match\Loader;
 use function BEM\DSL\tag as t;
 use function BEM\DSL\block as b;
@@ -13,17 +16,22 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 // setup DSL
 function DSL()
 {
-    $matchLoader     = new Loader;
-    $matchCollection = new Collection;
+    $collection = new Collection;
+    $loader     = new Loader($collection);
+    $compiler   = new Compiler($collection);
 
-    $engine = new Engine($matchLoader, $matchCollection);
+    $processor = new Processor($compiler);
+
+    $generator = new Generator;
+
+    $engine = new Engine($loader, $collection, $processor, $generator);
     $engine->setDirectory(__DIR__ . '/blocks');
 
     return $engine;
 }
 
 // render
-echo DSL()->render(
+echo DSL()->apply(
     b('page', [
         'title'   => 'Social Services Search Robot',
         'favicon' => '/favicon.ico',
