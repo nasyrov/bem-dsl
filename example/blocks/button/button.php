@@ -1,7 +1,7 @@
 <?php
 
-use function Lego\DSL\match as m;
-use function Lego\DSL\elem as e;
+use function BEM\DSL\match as m;
+use function BEM\DSL\elem as e;
 
 m('button', function ($ctx, $arr) {
     $ctx->tag($arr->tag ?: 'button');

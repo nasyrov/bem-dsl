@@ -1,4 +1,4 @@
-<?php namespace Lego\DSL;
+<?php namespace BEM\DSL;
 
 class Entity
 {
@@ -9,18 +9,13 @@ class Entity
         $this->storage = $storage;
     }
 
-    public function __isset($key)
-    {
-        return isset($this->storage[$key]);
-    }
-
     public function __set($key, $value)
     {
         $this->storage[$key] = $value;
     }
 
-    public function __get($key)
+    public function &__get($key)
     {
-        return isset($this->storage[$key]) ? $this->storage[$key] : null;
+        return $this->storage[$key];
     }
 }

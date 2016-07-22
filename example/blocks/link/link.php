@@ -1,7 +1,7 @@
 <?php
 
 
-use function Lego\DSL\match as m;
+use function BEM\DSL\match as m;
 
 m('link', function ($context) {
     $context->tag('a')

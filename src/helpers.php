@@ -1,26 +1,34 @@
-<?php namespace Lego\DSL;
+<?php namespace BEM\DSL;
 
-function match($expr, $func)
-{
-    return Engine::instance()->match($expr, $func);
-}
-
-function render($context)
-{
-    return Engine::instance()->render($context);
-}
-
+/**
+ * @param string $tag
+ * @param array $params
+ *
+ * @return Entity
+ */
 function tag($tag, array $params = [])
 {
-    return new Entity(array_merge(['tag' => $tag], $params));
+    return new Entity(['tag' => $tag] + $params);
 }
 
+/**
+ * @param string $block
+ * @param array $params
+ *
+ * @return Entity
+ */
 function block($block, array $params = [])
 {
-    return new Entity(array_merge(['block' => $block], $params));
+    return new Entity(['block' => $block] + $params);
 }
 
-function elem($elem, array $params = [])
+/**
+ * @param string $element
+ * @param array $params
+ *
+ * @return Entity
+ */
+function element($element, array $params = [])
 {
-    return new Entity(array_merge(['elem' => $elem], $params));
+    return new Entity(['element' => $element] + $params);
 }

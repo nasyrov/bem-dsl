@@ -1,9 +1,9 @@
 <?php
 
-use function Lego\DSL\block as b;
-use function Lego\DSL\elem as e;
-use function Lego\DSL\match as m;
-use function Lego\DSL\tag as t;
+use function BEM\DSL\block as b;
+use function BEM\DSL\elem as e;
+use function BEM\DSL\match as m;
+use function BEM\DSL\tag as t;
 
 m('page', function ($ctx, $arr) {
     $ctx->tag('body');

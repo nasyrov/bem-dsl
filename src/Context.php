@@ -1,4 +1,4 @@
-<?php namespace Lego\DSL;
+<?php namespace BEM\DSL;
 
 class Context
 {
@@ -7,41 +7,21 @@ class Context
 
     public function position()
     {
-        return 'content' === $this->node->index ? 1 : ($this->node->position ?: null);
+        return 'content' === $this->node->index ?
+            1 :
+            $this->node->position;
     }
 
     public function isFirst()
     {
-        return 'content' === $this->node->index || 1 === $this->node->position;
+        return 'content' === $this->node->index ||
+               1 === $this->node->position;
     }
 
     public function isLast()
     {
-        return 'content' === $this->node->index;
-    }
-
-    public function tParam($key, $value = null, $force = false)
-    {
-        $node = $this->node;
-        $node->tParams || $node->tParams = [];
-
-        if (null === $value) {
-            while ($node) {
-                if (isset($node->tParams[$key])) {
-                    return $node->tParams[$key];
-                }
-
-                $node = $node->parent;
-            }
-
-            return null;
-        }
-
-        if ($force || !isset($node->tParams[$key])) {
-            $node->tParams[$key] = $value;
-        }
-
-        return $this;
+        return 'content' === $this->node->index ||
+               $this->node->length === $this->node->position;
     }
 
     public function tag($tag = null, $force = false)
@@ -71,8 +51,10 @@ class Context
     public function attr($key, $value = null, $force = false)
     {
         if (null === $value) {
-            return isset($this->arr->attrs[$key]) ? $this->arr->attrs[$key] : null;
-        } elseif (!isset($this->arr->attrs[$key]) || $force) {
+            return isset($this->arr->attrs[$key]) ?
+                $this->arr->attrs[$key] :
+                null;
+        } elseif ($force || !isset($this->arr->attrs[$key])) {
             $this->arr->attrs[$key] = $value;
         }
 
@@ -86,7 +68,9 @@ class Context
         }
 
         $this->arr->attrs || $this->arr->attrs = [];
-        $this->arr->attrs = $force ? $attrs + $this->arr->attrs : $this->arr->attrs + $attrs;
+        $this->arr->attrs = $force ?
+            $attrs + $this->arr->attrs :
+            $this->arr->attrs + $attrs;
 
         return $this;
     }
@@ -129,7 +113,9 @@ class Context
     public function mod($key, $value = null, $force = false)
     {
         if (null === $value) {
-            return isset($this->arr->mods[$key]) ? $this->arr->mods[$key] : null;
+            return isset($this->arr->mods[$key]) ?
+                $this->arr->mods[$key] :
+                null;
         } elseif ($force || !isset($this->arr->mods[$key])) {
             $this->arr->mods[$key] = $value;
         }
@@ -143,7 +129,9 @@ class Context
             return $this->arr->mods;
         }
 
-        $this->arr->mods = $force ? $values + $this->arr->mods : $this->arr->mods + $values;
+        $this->arr->mods = $force ?
+            $values + $this->arr->mods :
+            $this->arr->mods + $values;
 
         return $this;
     }
@@ -161,22 +149,23 @@ class Context
 
     public function param($key, $value = null, $force = false)
     {
+        $node = $this->node;
+
         if (null === $value) {
-            return isset($this->arr->params[$key]) ? $this->arr->params[$key] : null;
-        } elseif ($force || !isset($this->arr->params[$key])) {
-            $this->arr->params[$key] = $value;
+            while ($node) {
+                if (isset($node->tParams[$key])) {
+                    return $node->tParams[$key];
+                }
+
+                $node = $node->parent;
+            }
+
+            return null;
         }
 
-        return $this;
-    }
-
-    public function params(array $values = null, $force = false)
-    {
-        if (null === $values) {
-            return $this->arr->params;
+        if ($force || !isset($node->tParams[$key])) {
+            $node->tParams[$key] = $value;
         }
-
-        $this->arr->params = $force ? $values + $this->arr->params : $this->arr->params + $values;
 
         return $this;
     }

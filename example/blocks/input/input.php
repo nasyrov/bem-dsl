@@ -1,7 +1,7 @@
 <?php
 
-use function Lego\DSL\elem as e;
-use function Lego\DSL\match as m;
+use function BEM\DSL\elem as e;
+use function BEM\DSL\match as m;
 
 m('input', function ($ctx, $arr) {
     $ctx->tag('span')

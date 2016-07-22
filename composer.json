@@ -1,6 +1,6 @@
 {
-  "name": "lego/dsl",
-  "description": "Lego template engine",
+  "name": "BEM/DSL",
+  "description": "BEM DSL for HTML generation",
   "keywords": [
     "templating",
     "templates",
@@ -24,7 +24,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Lego\\DSL\\": "src"
+      "BEM\\DSL\\": "src"
     },
     "files": [
       "src/helpers.php"
@@ -32,7 +32,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Lego\\DSL\\": "tests"
+      "BEM\\DSL\\": "tests"
     }
   },
   "scripts": {

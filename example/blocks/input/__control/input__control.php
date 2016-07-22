@@ -1,7 +1,7 @@
 <?php
 
 
-use function Lego\DSL\match as m;
+use function BEM\DSL\match as m;
 
 m('input__control', function ($ctx) {
     $ctx->tag('input');
@@ -18,7 +18,7 @@ m('input__control', function ($ctx) {
 
     false === $input->autocomplete && $attrs['autocomplete'] = 'off';
 
-    if ($input->mods && $input->mods->disabled) {
+    if (isset($input->mods['disabled'])) {
         $attrs['disabled'] = 'disabled';
     }
 
