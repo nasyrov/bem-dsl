@@ -5,7 +5,12 @@ use function BEM\DSL\element as e;
 use function BEM\DSL\tag as t;
 
 $match->add('page', function ($ctx, $arr) {
-    $ctx->tag('body');
+    $ctx->tag('body')
+        ->param('nonce', $arr->nonce)
+        ->content([
+            $ctx->content(),
+            $arr->scripts
+        ], true);
 
     return [
         $arr->doctype ?: '<!DOCTYPE html>',
@@ -21,7 +26,10 @@ $match->add('page', function ($ctx, $arr) {
                                 'content'    => 'IE=edge',
                             ]
                         ]),
-                        b('ua')
+                        b('ua'),
+                        $arr->head,
+                        $arr->styles,
+                        $arr->favicon ? e('favicon', ['url' => $arr->favicon]) : '',
                     ]
                 ]),
                 $arr
@@ -30,12 +38,19 @@ $match->add('page', function ($ctx, $arr) {
     ];
 });
 
-$match->add('page__head', function ($ctx) {
+$match->add('page__head', function ($ctx, $arr) {
     $ctx->bem(false)
         ->tag('head');
 });
 
-$match->add('page__meta', function ($ctx) {
+$match->add('page__meta', function ($ctx, $arr) {
     $ctx->bem(false)
         ->tag('meta');
+});
+
+$match->add('page__favicon', function ($ctx, $arr) {
+    $ctx->bem(false)
+        ->tag('link')
+        ->attr('rel', 'shortcut icon')
+        ->attr('href', $arr->url);
 });

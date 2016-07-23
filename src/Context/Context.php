@@ -67,23 +67,23 @@ class Context
     {
         $node = $this->node;
 
-        if (null === $value) {
-            while ($node) {
-                if (isset($node->params[$key])) {
-                    return $node->params[$key];
-                }
-
-                $node = $node->parent;
+        if (func_num_args() > 1) {
+            if ($force || !isset($node->params[$key])) {
+                $node->params[$key] = $value;
             }
 
-            return null;
+            return $this;
         }
 
-        if ($force || !isset($node->params[$key])) {
-            $node->params[$key] = $value;
+        while ($node) {
+            if (isset($node->params[$key])) {
+                return $node->params[$key];
+            }
+
+            $node = $node->parent;
         }
 
-        return $this;
+        return null;
     }
 
     public function tag($tag = null, $force = false)

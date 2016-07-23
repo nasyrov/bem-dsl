@@ -43,44 +43,51 @@ class Processor implements ProcessorInterface
         $compiledMatcher = $this->getMatcher();
 
         while ($node = array_shift($this->nodes)) {
-            if (is_scalar($node->bemArr)) {
+            $nodeBlock  = $node->block;
+            $nodeBemArr = $node->bemArr;
+
+            if (is_scalar($nodeBemArr)) {
                 continue;
-            } elseif (is_array($node->bemArr)) {
-                $this->children($node->bemArr, $node);
-                $result[$node->index] = $node->bemArr;
+            } elseif (is_array($nodeBemArr)) {
+                $this->children($nodeBemArr, $node);
+                $result[$node->index] = $nodeBemArr;
 
                 continue;
             }
 
-            if ($node->bemArr->elem) {
-                $node->bemArr->block = $node->block;
+            if ($nodeBemArr->elem) {
+                $nodeBlock = $nodeBemArr->block = $nodeBemArr->block ?: $nodeBlock;
             } elseif ($node->bemArr->block) {
-                $node->block = $node->bemArr->block;
+                $nodeBlock = $nodeBemArr->block;
             }
 
-            if (!$node->bemArr->stop) {
-                $ctx = new Context($this, $node, $node->bemArr);
+            if (!$nodeBemArr->stop) {
+                $ctx = new Context($this, $node, $nodeBemArr);
 
                 $subResult = $compiledMatcher($ctx, $node->bemArr);
                 if (null !== $subResult) {
-                    $node->bemArr  = $subResult;
+                    $node->bemArr = $subResult;
+                    $node->block  = $nodeBlock;
+
                     $this->nodes[] = $node;
 
                     continue;
                 }
             }
 
-            if (is_array($node->bemArr->content)) {
-                $this->children($node->bemArr->content, $node);
-            } elseif ($node->bemArr->content) {
+            if (is_array($nodeBemArr->content)) {
+                $this->children($nodeBemArr->content, $node);
+            } elseif ($nodeBemArr->content) {
                 $this->nodes[] = new Entity([
                     'index'  => 'content',
-                    'block'  => $node->block,
-                    'bemArr' => $node->bemArr->content,
+                    'block'  => $nodeBlock,
+                    'bemArr' => $nodeBemArr->content,
                     'parent' => $node,
                 ]);
             }
         }
+
+        var_dump($result[0]);
 
         return $result[0];
     }
