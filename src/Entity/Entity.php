@@ -1,6 +1,6 @@
-<?php namespace BEM\DSL;
+<?php namespace BEM\DSL\Entity;
 
-class Entity
+class Entity implements EntityInterface
 {
     protected $storage;
 

@@ -11,7 +11,12 @@ class Loader implements LoaderInterface
     protected $collection;
     protected $directories = [];
 
-    public function __construct(Collection $collection)
+    /**
+     * Loader constructor.
+     *
+     * @param CollectionInterface $collection
+     */
+    public function __construct(CollectionInterface $collection)
     {
         $this->collection = $collection;
     }

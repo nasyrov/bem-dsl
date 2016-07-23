@@ -1,11 +1,18 @@
 <?php namespace BEM\DSL\Context;
 
+use Closure;
+
 interface ProcessorInterface
 {
     /**
-     * @param mixed $arr
+     * @return Closure
+     */
+    public function getMatcher();
+
+    /**
+     * @param mixed $bemArr
      *
      * @return mixed
      */
-    public function process($arr);
+    public function process($bemArr);
 }

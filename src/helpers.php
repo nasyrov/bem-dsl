@@ -1,5 +1,7 @@
 <?php namespace BEM\DSL;
 
+use BEM\DSL\Entity\Entity;
+
 /**
  * @param string $tag
  * @param array $params

@@ -1,69 +1,82 @@
 <?php namespace BEM\DSL\Context;
 
-use BEM\DSL\Context;
-use BEM\DSL\Entity;
+use BEM\DSL\Entity\Entity;
+use BEM\DSL\Entity\EntityInterface;
 use BEM\DSL\Match\CompilerInterface;
 
 class Processor implements ProcessorInterface
 {
     protected $compiler;
     protected $matcher;
-
     protected $nodes;
 
+    /**
+     * Processor constructor.
+     *
+     * @param CompilerInterface $compiler
+     */
     public function __construct(CompilerInterface $compiler)
     {
         $this->compiler = $compiler;
     }
 
-    public function process($arr)
+    public function getMatcher()
     {
-        $result = [$arr];
+        if (null === $this->matcher) {
+            $this->matcher = $this->compiler->compile();
+        }
+
+        return $this->matcher;
+    }
+
+    public function process($bemArr)
+    {
+        $result = [$bemArr];
 
         $this->nodes   = [];
         $this->nodes[] = new Entity([
-            'index' => 0,
-            'block' => null,
-            'arr'   => $arr,
+            'index'  => 0,
+            'block'  => null,
+            'bemArr' => $bemArr,
         ]);
 
-        $compiledMatcher = $this->matcher = $this->matcher ?: $this->compiler->compile();
-
-        $ctx = new Context;
+        $compiledMatcher = $this->getMatcher();
 
         while ($node = array_shift($this->nodes)) {
-            if (is_scalar($node->arr)) {
+            if (is_scalar($node->bemArr)) {
                 continue;
-            } elseif (is_array($node->arr)) {
-                $this->children($node->arr, $node);
-                $result[$node->index] = $node->arr;
-                continue;
-            }
-
-            if ($node->arr->elem) {
-                $node->arr->block = $node->block;
-            } elseif ($node->arr->block) {
-                $node->block = $node->arr->block;
-            }
-
-            $ctx->node = $node;
-            $ctx->arr  = $node->arr;
-
-            $res = $compiledMatcher($ctx, $node->arr);
-            if (null !== $res) {
-                $node->arr     = $res;
-                $this->nodes[] = $node;
+            } elseif (is_array($node->bemArr)) {
+                $this->children($node->bemArr, $node);
+                $result[$node->index] = $node->bemArr;
 
                 continue;
             }
 
-            if (is_array($node->arr->content)) {
-                $this->children($node->arr->content, $node);
-            } elseif ($node->arr->content) {
+            if ($node->bemArr->elem) {
+                $node->bemArr->block = $node->block;
+            } elseif ($node->bemArr->block) {
+                $node->block = $node->bemArr->block;
+            }
+
+            if (!$node->bemArr->stop) {
+                $ctx = new Context($this, $node, $node->bemArr);
+
+                $subResult = $compiledMatcher($ctx, $node->bemArr);
+                if (null !== $subResult) {
+                    $node->bemArr  = $subResult;
+                    $this->nodes[] = $node;
+
+                    continue;
+                }
+            }
+
+            if (is_array($node->bemArr->content)) {
+                $this->children($node->bemArr->content, $node);
+            } elseif ($node->bemArr->content) {
                 $this->nodes[] = new Entity([
                     'index'  => 'content',
                     'block'  => $node->block,
-                    'arr'    => $node->arr->content,
+                    'bemArr' => $node->bemArr->content,
                     'parent' => $node,
                 ]);
             }
@@ -72,11 +85,15 @@ class Processor implements ProcessorInterface
         return $result[0];
     }
 
-    protected function children(array $children, $parent)
+    /**
+     * @param array $children
+     * @param EntityInterface $parent
+     */
+    protected function children(array $children, EntityInterface $parent)
     {
         $position = 0;
         foreach ($children as $index => $child) {
-            if (!$child instanceof Entity) {
+            if (!$child instanceof EntityInterface) {
                 continue;
             }
 
@@ -84,7 +101,7 @@ class Processor implements ProcessorInterface
                 'index'    => $index,
                 'position' => ++$position,
                 'block'    => $parent->block,
-                'arr'      => $child,
+                'bemArr'   => $child,
                 'parent'   => $parent,
             ]);
         }

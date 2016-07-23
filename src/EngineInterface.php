@@ -27,23 +27,23 @@ interface EngineInterface
     public function match($expression, Closure $closure);
 
     /**
-     * @param mixed $arr
+     * @param mixed $bemArr
      *
      * @return mixed
      */
-    public function process($arr);
+    public function process($bemArr);
 
     /**
-     * @param mixed $arr
+     * @param mixed $bemArr
      *
      * @return string
      */
-    public function html($arr);
+    public function toHtml($bemArr);
 
     /**
-     * @param mixed $arr
+     * @param mixed $bemArr
      *
      * @return string
      */
-    public function apply($arr);
+    public function apply($bemArr);
 }

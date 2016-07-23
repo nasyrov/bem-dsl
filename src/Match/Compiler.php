@@ -19,6 +19,9 @@ class Compiler implements CompilerInterface
         return $closure($this->collection->closures());
     }
 
+    /**
+     * @return string
+     */
     protected function precompile()
     {
         $declarations = $this->declarations();
@@ -84,6 +87,11 @@ class Compiler implements CompilerInterface
         return $declarations;
     }
 
+    /**
+     * @param string $expression
+     *
+     * @return array
+     */
     protected function extractNotations($expression)
     {
         if (false !== strpos($expression, $this->optDelimElem)) {

@@ -1,7 +1,7 @@
 <?php namespace BEM\DSL;
 
 use BEM\DSL\Context\ProcessorInterface;
-use BEM\DSL\HTML\Generator;
+use BEM\DSL\HTML\GeneratorInterface;
 use BEM\DSL\Match\CollectionInterface;
 use BEM\DSL\Match\LoaderInterface;
 use Closure;
@@ -13,11 +13,19 @@ class Engine implements EngineInterface
     protected $processor;
     protected $generator;
 
+    /**
+     * Engine constructor.
+     *
+     * @param LoaderInterface $loader
+     * @param CollectionInterface $collection
+     * @param ProcessorInterface $processor
+     * @param GeneratorInterface $generator
+     */
     public function __construct(
         LoaderInterface $loader,
         CollectionInterface $collection,
         ProcessorInterface $processor,
-        Generator $generator
+        GeneratorInterface $generator
     ) {
         $this->loader     = $loader;
         $this->collection = $collection;
@@ -46,18 +54,18 @@ class Engine implements EngineInterface
         return $this;
     }
 
-    public function process($arr)
+    public function process($bemArr)
     {
-        return $this->processor->process($arr);
+        return $this->processor->process($bemArr);
     }
 
-    public function html($arr)
+    public function toHtml($bemArr)
     {
-        return $this->generator->generate($arr);
+        return $this->generator->generate($bemArr);
     }
 
-    public function apply($arr)
+    public function apply($bemArr)
     {
-        return $this->html($this->process($arr));
+        return $this->toHtml($this->process($bemArr));
     }
 }

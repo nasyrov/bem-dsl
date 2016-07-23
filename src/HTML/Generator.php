@@ -11,7 +11,7 @@ class Generator implements GeneratorInterface
     protected $optDelimElem = '__';
     protected $optDelimMod = '_';
 
-    protected $buf;
+    protected $buffer;
 
     protected $shortTags = [
         'area',
@@ -33,42 +33,32 @@ class Generator implements GeneratorInterface
         'wbr',
     ];
 
-    public function generate($arr)
+    public function generate($bemArr)
     {
-        $this->buf = '';
-        $this->html($arr);
-        $buf = $this->buf;
-        unset($this->buf);
+        $this->buffer = '';
+        $this->html($bemArr);
+        $buffer = $this->buffer;
+        unset($this->buffer);
 
-        return $buf;
+        return $buffer;
     }
 
     protected function html($arr)
     {
         if (!$arr) {
-            $this->buf .= '';
+            $this->buffer .= '';
 
             return;
-        }
-
-        if (is_scalar($arr)) {
-            $this->buf .= $this->optEscapeContent ?
-                str_replace(['&', '<', '>'], ['&amp;', '&lt;', '&gt;'], $arr) :
-                $arr;
+        } elseif (is_scalar($arr)) {
+            $this->buffer .= $this->optEscapeContent ?
+                str_replace(['&', '<', '>'], ['&amp;', '&lt;', '&gt;'], (string)$arr) :
+                (string)$arr;
 
             return;
-        }
-
-        if (is_array($arr)) {
+        } elseif (is_array($arr)) {
             foreach ($arr as $value) {
                 $value && $this->html($value);
             }
-
-            return;
-        }
-
-        if ($arr instanceof Closure) {
-            $this->html($arr());
 
             return;
         }
@@ -85,35 +75,12 @@ class Generator implements GeneratorInterface
             }
         }
 
-        $toBemCssClasses = function ($ctx, $base, $parentBase = null) {
-            $res = '';
-            if ($parentBase !== $base) {
-                if ($parentBase) {
-                    $res .= ' ';
-                }
-                $res .= $base;
-            }
-            if ($ctx->mods) {
-                foreach ($ctx->mods as $key => $value) {
-                    if (!$value && 0 !== $value) {
-                        continue;
-                    }
-                    $res .= ' ' .
-                            ($this->optNobaseMods ? $this->optDelimMod : $base . $this->optDelimMod) .
-                            $key .
-                            (true === $value ? '' : $this->optDelimMod . $value);
-                }
-            }
-
-            return $res;
-        };
-
         $cls      = '';
         $jsParams = [];
         if (false !== $arr->bem) {
             $base = $arr->block . ($arr->elem ? $this->optDelimElem . $arr->elem : '');
             if ($arr->block) {
-                $cls = $toBemCssClasses($arr, $base);
+                $cls = $this->toBemCssClasses($arr, $base);
                 if ($arr->js) {
                     $jsParams[$base] = true === $arr->js ? [] : $arr->js;
                 }
@@ -127,16 +94,20 @@ class Generator implements GeneratorInterface
                     if (!$mix || false === $mix->bem) {
                         continue;
                     }
+
                     $mixBlock = $mix->block ?: ($arr->block ?: '');
                     $mixElem  = $mix->elem ?: ($mix->block ? null : ($arr->block ? $arr->elem : null));
                     $mixBase  = $mixBlock . ($mixElem ? $this->optDelimElem . $mixElem : '');
+
                     if (!$mixBlock) {
                         continue;
                     }
-                    $cls .= $toBemCssClasses($mix, $mixBase, $base);
+
+                    $cls .= $this->toBemCssClasses($mix, $mixBase, $base);
                     if (!$mix->js) {
                         continue;
                     }
+
                     $jsParams[$mixBase] = true === $mix->js ? [] : $mix->js;
                     $hasMixJsParams     = true;
                     $addJsInitClass || $addJsInitClass = $mixBlock &&
@@ -157,16 +128,44 @@ class Generator implements GeneratorInterface
             }
         }
 
-        $arr->cls && $cls = ($cls ? $cls . ' ' : '') . $arr->cls;
+        if ($arr->cls) {
+            $cls = ($cls ? $cls . ' ' : '') . $arr->cls;
+        }
 
         $tag = $arr->tag ?: 'div';
-        $this->buf .= '<' . $tag . ($cls ? ' class="' . $cls . '"' : '') . ($attrs ?: '');
+        $this->buffer .= '<' . $tag . ($cls ? ' class="' . $cls . '"' : '') . ($attrs ?: '');
         if (in_array($tag, $this->shortTags)) {
-            $this->buf .= '/>';
+            $this->buffer .= '/>';
         } else {
-            $this->buf .= '>';
+            $this->buffer .= '>';
             $this->html($arr->content);
-            $this->buf .= sprintf('</%s>', $tag);
+            $this->buffer .= sprintf('</%s>', $tag);
         }
+    }
+
+    protected function toBemCssClasses($ctx, $base, $parentBase = null)
+    {
+        $res = '';
+
+        if ($parentBase !== $base) {
+            $res .= $parentBase ? ' ' : $base;
+        }
+
+        if (!$ctx->mods) {
+            return $res;
+        }
+
+        foreach ($ctx->mods as $key => $value) {
+            if (!$value) {
+                continue;
+            }
+
+            $res .= ' ' .
+                    ($this->optNobaseMods ? $this->optDelimMod : $base . $this->optDelimMod) .
+                    $key .
+                    (true === $value ? '' : $this->optDelimMod . $value);
+        }
+
+        return $res;
     }
 }

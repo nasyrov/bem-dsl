@@ -3,9 +3,9 @@
 interface GeneratorInterface
 {
     /**
-     * @param mixed $arr
+     * @param mixed $bemArr
      *
      * @return string
      */
-    public function generate($arr);
+    public function generate($bemArr);
 }
