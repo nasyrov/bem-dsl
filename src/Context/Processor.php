@@ -48,23 +48,7 @@ class Processor implements ProcessorInterface
             $nodeBemArr = $node->bemArr;
 
             if (is_array($nodeBemArr)) {
-                $position = 0;
-                foreach ($nodeBemArr as $index => $child) {
-                    if (!$child instanceof EntityInterface) {
-                        continue;
-                    }
-
-                    $this->nodes[] = new Entity([
-                        'index'    => $index,
-                        'position' => ++$position,
-                        'block'    => $nodeBlock,
-                        'bemArr'   => $child,
-                        'parent'   => $node,
-                    ]);
-                }
-
-                $node->length = $position;
-
+                $this->children($nodeBemArr, $nodeBlock, $node);
                 $node->resArr[$node->index] = $nodeBemArr;
             } elseif ($nodeBemArr instanceof EntityInterface) {
                 if ($nodeBemArr->elem) {
@@ -73,55 +57,34 @@ class Processor implements ProcessorInterface
                     $nodeBlock = $nodeBemArr->block;
                 }
 
-                $stopProcess = false;
                 if (!$nodeBemArr->stop) {
                     $ctx = new Context($this, $node, $nodeBemArr);
 
-                    $subResult = $compiledMatcher($ctx, $node->bemArr);
-                    if (null !== $subResult) {
-                        $nodeBemArr = $subResult;
-
-                        $node->bemArr = $nodeBemArr;
+                    $subResArr = $compiledMatcher($ctx, $node->bemArr);
+                    if (null !== $subResArr) {
+                        $node->bemArr = $subResArr;
                         $node->block  = $nodeBlock;
 
                         $this->nodes[] = $node;
 
-                        $stopProcess = true;
+                        continue;
                     }
                 }
 
-                if (!$stopProcess) {
-                    if (is_array($nodeBemArr->content)) {
-                        $position = 0;
-                        foreach ($nodeBemArr->content as $index => $child) {
-                            if (!$child instanceof EntityInterface) {
-                                continue;
-                            }
-
-                            $this->nodes[] = new Entity([
-                                'index'    => $index,
-                                'position' => ++$position,
-                                'block'    => $nodeBlock,
-                                'bemArr'   => $child,
-                                'parent'   => $node,
-                            ]);
-                        }
-
-                        $node->length = $position;
-                    } elseif ($nodeBemArr->content) {
-                        $this->nodes[] = new Entity([
-                            'index'  => 'content',
-                            'block'  => $nodeBlock,
-                            'bemArr' => $nodeBemArr->content,
-                            'resArr' => $nodeBemArr,
-                            'parent' => $node,
-                        ]);
-                    }
+                if (is_array($nodeBemArr->content)) {
+                    $nodeBemArr->content = $this->flatten($nodeBemArr->content);
+                    $this->children($nodeBemArr->content, $nodeBlock, $node);
+                } elseif ($nodeBemArr->content) {
+                    $this->nodes[] = new Entity([
+                        'index'  => 'content',
+                        'block'  => $nodeBlock,
+                        'bemArr' => $nodeBemArr->content,
+                        'resArr' => $nodeBemArr,
+                        'parent' => $node,
+                    ]);
                 }
             }
         }
-
-        var_dump($resArr[0]);
 
         return $resArr[0];
     }
@@ -130,11 +93,9 @@ class Processor implements ProcessorInterface
     {
         $result = [];
 
-        foreach ($array as $key => $value) {
+        foreach ($array as $value) {
             if (is_array($value)) {
-                echo 'flattening';
-                var_dump($value);
-                $result += $this->flatten($value);
+                $result = array_merge($result, $value);
             } else {
                 $result[] = $value;
             }
@@ -147,7 +108,7 @@ class Processor implements ProcessorInterface
      * @param array $children
      * @param EntityInterface $parent
      */
-    protected function children(array $children, EntityInterface $parent)
+    protected function children(array $children, $block, EntityInterface $parent)
     {
         $position = 0;
         foreach ($children as $index => $child) {
@@ -158,8 +119,9 @@ class Processor implements ProcessorInterface
             $this->nodes[] = new Entity([
                 'index'    => $index,
                 'position' => ++$position,
-                'block'    => $parent->block,
+                'block'    => $block,
                 'bemArr'   => $child,
+                'resArr'   => $children,
                 'parent'   => $parent,
             ]);
         }

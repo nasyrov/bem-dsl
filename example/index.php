@@ -41,8 +41,7 @@ echo DSL()->apply(
                     'name'    => 'description',
                     'content' => 'find them all'
                 ]
-            ]),
-            e('favicon', ['url' => 'test.ico'])
+            ])
         ],
         'styles'  => [
             e('css', ['url' => 'index.css']),
