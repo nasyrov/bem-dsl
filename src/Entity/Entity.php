@@ -2,11 +2,13 @@
 
 class Entity implements EntityInterface
 {
-    protected $storage;
+    protected $storage = [];
 
-    public function __construct(array $storage)
+    public function __construct(array $storage = null)
     {
-        $this->storage = $storage;
+        if ($storage) {
+            $this->storage = $storage;
+        }
     }
 
     public function __set($key, $value)

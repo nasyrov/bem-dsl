@@ -42,6 +42,7 @@ echo DSL()->apply(
                     'content' => 'find them all'
                 ]
             ]),
+            e('favicon', ['url' => 'test.ico'])
         ],
         'styles'  => [
             e('css', ['url' => 'index.css']),
@@ -49,71 +50,69 @@ echo DSL()->apply(
         'scripts' => [
             e('js', ['url' => 'index.js']),
         ],
-        'content' => [
-            b('sssr', [
-                'content' => [
-                    e('header', [
-                        'content' => [
-                            e('logo', [
-                                'content' => [
-                                    b('icon', [
-                                        'mods' => [
-                                            'type' => 'sssr',
-                                        ]
-                                    ]),
-                                    'Social Services Search Robot:'
-                                ]
-                            ]),
-                            b('form', [
-                                'content' => [
-                                    e('search', [
-                                        'content' => [
-                                            b('input', [
-                                                'mods'        => [
-                                                    'size'      => 'm',
-                                                    'has-clear' => true,
-                                                ],
-                                                'name'        => 'query',
-                                                'val'         => 'Search ...',
-                                                'placeholder' => 'try me, baby!'
-                                            ]),
-                                            b('button', [
+        'content' => b('sssr', [
+            'content' => [
+                e('header', [
+                    'content' => [
+                        e('logo', [
+                            'content' => [
+                                b('icon', [
+                                    'mods' => [
+                                        'type' => 'sssr',
+                                    ]
+                                ]),
+                                'Social Services Search Robot:'
+                            ]
+                        ]),
+                        b('form', [
+                            'content' => [
+                                e('search', [
+                                    'content' => [
+                                        b('input', [
+                                            'mods'        => [
+                                                'size'      => 'm',
+                                                'has-clear' => true,
+                                            ],
+                                            'name'        => 'query',
+                                            'val'         => 'Search ...',
+                                            'placeholder' => 'try me, baby!'
+                                        ]),
+                                        b('button', [
+                                            'mods' => [
+                                                'size' => 'm',
+                                                'type' => 'submit',
+                                            ],
+                                            'text' => 'Search'
+                                        ]),
+                                        b('spin', [
+                                            'mods' => [
+                                                'size' => 's',
+                                            ]
+                                        ])
+                                    ]
+                                ]),
+                                e('filter', [
+                                    'content' => call_user_func(function () {
+                                        foreach (['twitter', 'instagram'] as $service) {
+                                            $res[] = b('checkbox', [
                                                 'mods' => [
-                                                    'size' => 'm',
-                                                    'type' => 'submit',
+                                                    'size'    => 'l',
+                                                    'checked' => 'twitter' === $service,
                                                 ],
-                                                'text' => 'Search'
-                                            ]),
-                                            b('spin', [
-                                                'mods' => [
-                                                    'size' => 's',
-                                                ]
-                                            ])
-                                        ]
-                                    ]),
-                                    e('filter', [
-                                        'content' => call_user_func(function () {
-                                            foreach (['twitter', 'instagram'] as $service) {
-                                                $res[] = b('checkbox', [
-                                                    'mods' => [
-                                                        'size'    => 'l',
-                                                        'checked' => 'twitter' === $service,
-                                                    ],
-                                                    'name' => $service,
-                                                    'text' => $service
-                                                ]);
-                                            }
+                                                'name' => $service,
+                                                'text' => $service
+                                            ]);
+                                        }
 
-                                            return $res;
-                                        })
-                                    ])
-                                ]
-                            ])
-                        ]
-                    ]),
-                    e('content')
-                ]
-            ])
-        ]
+                                        return $res;
+                                    })
+                                ])
+                            ]
+                        ])
+                    ]
+                ]),
+                e('content')
+            ]
+        ])
     ])
 ), "\n";

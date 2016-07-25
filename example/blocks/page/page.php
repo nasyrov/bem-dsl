@@ -19,13 +19,14 @@ $match->add('page', function ($ctx, $arr) {
             'content' => [
                 e('head', [
                     'content' => [
-                        e('meta', ['attrs' => ['charset' => 'utf-8']]),
-                        e('meta', [
+                        t('meta', ['attrs' => ['charset' => 'utf-8']]),
+                        $arr->uaCompatible === false ? '' : t('meta', [
                             'attrs' => [
                                 'http-equiv' => 'X-UA-Compatible',
                                 'content'    => 'IE=edge',
                             ]
                         ]),
+                        t('title', ['content' => $arr->title]),
                         b('ua'),
                         $arr->head,
                         $arr->styles,
@@ -38,12 +39,12 @@ $match->add('page', function ($ctx, $arr) {
     ];
 });
 
-$match->add('page__head', function ($ctx, $arr) {
+$match->add('page__head', function ($ctx) {
     $ctx->bem(false)
         ->tag('head');
 });
 
-$match->add('page__meta', function ($ctx, $arr) {
+$match->add('page__meta', function ($ctx) {
     $ctx->bem(false)
         ->tag('meta');
 });
