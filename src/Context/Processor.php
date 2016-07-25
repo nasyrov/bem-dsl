@@ -31,58 +31,116 @@ class Processor implements ProcessorInterface
 
     public function process($bemArr)
     {
-        $result = [$bemArr];
+        $resArr = new \ArrayObject([$bemArr]);
 
         $this->nodes   = [];
         $this->nodes[] = new Entity([
             'index'  => 0,
             'block'  => null,
-            'bemArr' => $bemArr,
+            'bemArr' => $resArr[0],
+            'resArr' => $resArr,
         ]);
 
         $compiledMatcher = $this->getMatcher();
 
         while ($node = array_shift($this->nodes)) {
-            if (is_scalar($node->bemArr)) {
-                continue;
-            } elseif (is_array($node->bemArr)) {
-                $this->children($node->bemArr, $node);
-                $result[$node->index] = $node->bemArr;
+            $nodeBlock  = $node->block;
+            $nodeBemArr = $node->bemArr;
 
-                continue;
-            }
+            if (is_array($nodeBemArr)) {
+                $position = 0;
+                foreach ($nodeBemArr as $index => $child) {
+                    if (!$child instanceof EntityInterface) {
+                        continue;
+                    }
 
-            if ($node->bemArr->elem) {
-                $node->bemArr->block = $node->block;
-            } elseif ($node->bemArr->block) {
-                $node->block = $node->bemArr->block;
-            }
-
-            if (!$node->bemArr->stop) {
-                $ctx = new Context($this, $node, $node->bemArr);
-
-                $subResult = $compiledMatcher($ctx, $node->bemArr);
-                if (null !== $subResult) {
-                    $node->bemArr  = $subResult;
-                    $this->nodes[] = $node;
-
-                    continue;
+                    $this->nodes[] = new Entity([
+                        'index'    => $index,
+                        'position' => ++$position,
+                        'block'    => $nodeBlock,
+                        'bemArr'   => $child,
+                        'parent'   => $node,
+                    ]);
                 }
-            }
 
-            if (is_array($node->bemArr->content)) {
-                $this->children($node->bemArr->content, $node);
-            } elseif ($node->bemArr->content) {
-                $this->nodes[] = new Entity([
-                    'index'  => 'content',
-                    'block'  => $node->block,
-                    'bemArr' => $node->bemArr->content,
-                    'parent' => $node,
-                ]);
+                $node->length = $position;
+
+                $node->resArr[$node->index] = $nodeBemArr;
+            } elseif ($nodeBemArr instanceof EntityInterface) {
+                if ($nodeBemArr->elem) {
+                    $nodeBlock = $nodeBemArr->block = $nodeBemArr->block ?: $nodeBlock;
+                } elseif ($nodeBemArr->block) {
+                    $nodeBlock = $nodeBemArr->block;
+                }
+
+                $stopProcess = false;
+                if (!$nodeBemArr->stop) {
+                    $ctx = new Context($this, $node, $nodeBemArr);
+
+                    $subResult = $compiledMatcher($ctx, $node->bemArr);
+                    if (null !== $subResult) {
+                        $nodeBemArr = $subResult;
+
+                        $node->bemArr = $nodeBemArr;
+                        $node->block  = $nodeBlock;
+
+                        $this->nodes[] = $node;
+
+                        $stopProcess = true;
+                    }
+                }
+
+                if (!$stopProcess) {
+                    if (is_array($nodeBemArr->content)) {
+                        $position = 0;
+                        foreach ($nodeBemArr->content as $index => $child) {
+                            if (!$child instanceof EntityInterface) {
+                                continue;
+                            }
+
+                            $this->nodes[] = new Entity([
+                                'index'    => $index,
+                                'position' => ++$position,
+                                'block'    => $nodeBlock,
+                                'bemArr'   => $child,
+                                'parent'   => $node,
+                            ]);
+                        }
+
+                        $node->length = $position;
+                    } elseif ($nodeBemArr->content) {
+                        $this->nodes[] = new Entity([
+                            'index'  => 'content',
+                            'block'  => $nodeBlock,
+                            'bemArr' => $nodeBemArr->content,
+                            'resArr' => $nodeBemArr,
+                            'parent' => $node,
+                        ]);
+                    }
+                }
             }
         }
 
-        return $result[0];
+        var_dump($resArr[0]);
+
+        return $resArr[0];
+    }
+
+    protected function flatten(array $array)
+    {
+        $result = [];
+
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                echo 'flattening';
+                var_dump($value);
+                $result += $this->flatten($value);
+            } else {
+                $result[] = $value;
+            }
+        }
+
+        return $result;
     }
 
     /**

@@ -13,8 +13,6 @@ class Collection implements CollectionInterface
             foreach ($expression as $value) {
                 $this->add($value, $closure);
             }
-        } elseif (array_key_exists($expression, $this->matches)) {
-            throw new LogicException(sprintf('The "%s" expression is already registered.', $expression));
         } else {
             $this->matches[$expression] = $closure;
         }

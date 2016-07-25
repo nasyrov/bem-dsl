@@ -36,43 +36,83 @@ echo DSL()->apply(
         'title'   => 'Social Services Search Robot',
         'favicon' => '/favicon.ico',
         'head'    => [
-            e('meta', ['attrs' => ['name' => 'description', 'content' => 'find them all']]),
-            e('css', ['url' => '_index.css']),
+            e('meta', [
+                'attrs' => [
+                    'name'    => 'description',
+                    'content' => 'find them all'
+                ]
+            ]),
+            e('favicon', ['url' => 'test.ico'])
+        ],
+        'styles'  => [
+            e('css', ['url' => 'index.css']),
         ],
         'scripts' => [
-            e('js', ['url' => '_index.js']),
+            e('js', ['url' => 'index.js']),
         ],
-        'content' => [
-            b('header', [
-                'content' => b('layout', [
+        'content' => b('sssr', [
+            'content' => [
+                e('header', [
                     'content' => [
-                        e('left', [
-                            'content' => b('form', [
-                                'attrs'   => ['action' => 'http://yandex.ru/yandsearch'],
-                                'content' => [
-                                    b('input', [
-                                        'mods'        => [
-                                            'size'      => 'm',
-                                            'has-clear' => true,
-                                        ],
-                                        'name'        => 'query',
-                                        'val'         => 'Search ...',
-                                        'placeholder' => 'try me, baby!'
-                                    ]),
-                                    b('button', [
-                                        'mods' => [
-                                            'size' => 'm',
-                                            'type' => 'submit',
-                                        ],
-                                        'text' => 'Search'
-                                    ])
-                                ]
-                            ])
+                        e('logo', [
+                            'content' => [
+                                b('icon', [
+                                    'mods' => [
+                                        'type' => 'sssr',
+                                    ]
+                                ]),
+                                'Social Services Search Robot:'
+                            ]
                         ]),
-                        e('right')
+                        b('form', [
+                            'content' => [
+                                e('search', [
+                                    'content' => [
+                                        b('input', [
+                                            'mods'        => [
+                                                'size'      => 'm',
+                                                'has-clear' => true,
+                                            ],
+                                            'name'        => 'query',
+                                            'val'         => 'Search ...',
+                                            'placeholder' => 'try me, baby!'
+                                        ]),
+                                        b('button', [
+                                            'mods' => [
+                                                'size' => 'm',
+                                                'type' => 'submit',
+                                            ],
+                                            'text' => 'Search'
+                                        ]),
+                                        b('spin', [
+                                            'mods' => [
+                                                'size' => 's',
+                                            ]
+                                        ])
+                                    ]
+                                ]),
+                                e('filter', [
+                                    'content' => call_user_func(function () {
+                                        foreach (['twitter', 'instagram'] as $service) {
+                                            $res[] = b('checkbox', [
+                                                'mods' => [
+                                                    'size'    => 'l',
+                                                    'checked' => 'twitter' === $service,
+                                                ],
+                                                'name' => $service,
+                                                'text' => $service
+                                            ]);
+                                        }
+
+                                        return $res;
+                                    })
+                                ])
+                            ]
+                        ])
                     ]
-                ])
-            ]),
-        ]
+                ]),
+                e('content')
+            ]
+        ])
     ])
 ), "\n";
